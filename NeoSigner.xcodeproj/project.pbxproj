@@ -6,13 +6,83 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		431660632D6D7E070085FB20 /* bundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431660572D6D7E070085FB20 /* bundle.cpp */; };
+		431660642D6D7E070085FB20 /* archo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431660552D6D7E070085FB20 /* archo.cpp */; };
+		431660652D6D7E070085FB20 /* base64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4316604D2D6D7E070085FB20 /* base64.cpp */; };
+		431660662D6D7E070085FB20 /* Utils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4316605F2D6D7E070085FB20 /* Utils.mm */; };
+		431660672D6D7E070085FB20 /* signing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4316605D2D6D7E070085FB20 /* signing.cpp */; };
+		431660682D6D7E070085FB20 /* openssl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4316605B2D6D7E070085FB20 /* openssl.cpp */; };
+		431660692D6D7E070085FB20 /* macho.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431660592D6D7E070085FB20 /* macho.cpp */; };
+		4316606A2D6D7E070085FB20 /* zsign.mm in Sources */ = {isa = PBXBuildFile; fileRef = 431660612D6D7E070085FB20 /* zsign.mm */; };
+		4316606B2D6D7E070085FB20 /* common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4316604F2D6D7E070085FB20 /* common.cpp */; };
+		4316606C2D6D7E070085FB20 /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431660512D6D7E070085FB20 /* json.cpp */; };
+		431661212D6D82320085FB20 /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4316606F2D6D7E210085FB20 /* openssl.xcframework */; };
+		431661222D6D82320085FB20 /* openssl.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4316606F2D6D7E210085FB20 /* openssl.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		43A253FD2D6E725800DEE1C7 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 43A253FC2D6E725800DEE1C7 /* ZIPFoundation */; };
+		43A254002D6E72CE00DEE1C7 /* WelcomeSheet in Frameworks */ = {isa = PBXBuildFile; productRef = 43A253FF2D6E72CE00DEE1C7 /* WelcomeSheet */; };
+		43A254032D6E72DB00DEE1C7 /* Swifter in Frameworks */ = {isa = PBXBuildFile; productRef = 43A254022D6E72DB00DEE1C7 /* Swifter */; };
+		43A254552D6E737400DEE1C7 /* Vapor in Frameworks */ = {isa = PBXBuildFile; productRef = 43A254542D6E737400DEE1C7 /* Vapor */; };
+		43ECF0002D6E826C002DA79F /* Glur in Frameworks */ = {isa = PBXBuildFile; productRef = 43ECEFFF2D6E826C002DA79F /* Glur */; };
+		43ECF0812D6E84C0002DA79F /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 43ECF0802D6E84C0002DA79F /* NukeUI */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		431661232D6D82320085FB20 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				431661222D6D82320085FB20 /* openssl.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		4316604C2D6D7E070085FB20 /* base64.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = base64.h; sourceTree = "<group>"; };
+		4316604D2D6D7E070085FB20 /* base64.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = base64.cpp; sourceTree = "<group>"; };
+		4316604E2D6D7E070085FB20 /* common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
+		4316604F2D6D7E070085FB20 /* common.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = common.cpp; sourceTree = "<group>"; };
+		431660502D6D7E070085FB20 /* json.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = json.h; sourceTree = "<group>"; };
+		431660512D6D7E070085FB20 /* json.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = json.cpp; sourceTree = "<group>"; };
+		431660522D6D7E070085FB20 /* mach-o.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "mach-o.h"; sourceTree = "<group>"; };
+		431660542D6D7E070085FB20 /* archo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = archo.h; sourceTree = "<group>"; };
+		431660552D6D7E070085FB20 /* archo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = archo.cpp; sourceTree = "<group>"; };
+		431660562D6D7E070085FB20 /* bundle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bundle.h; sourceTree = "<group>"; };
+		431660572D6D7E070085FB20 /* bundle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = bundle.cpp; sourceTree = "<group>"; };
+		431660582D6D7E070085FB20 /* macho.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = macho.h; sourceTree = "<group>"; };
+		431660592D6D7E070085FB20 /* macho.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = macho.cpp; sourceTree = "<group>"; };
+		4316605A2D6D7E070085FB20 /* openssl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = openssl.h; sourceTree = "<group>"; };
+		4316605B2D6D7E070085FB20 /* openssl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = openssl.cpp; sourceTree = "<group>"; };
+		4316605C2D6D7E070085FB20 /* signing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = signing.h; sourceTree = "<group>"; };
+		4316605D2D6D7E070085FB20 /* signing.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = signing.cpp; sourceTree = "<group>"; };
+		4316605E2D6D7E070085FB20 /* Utils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Utils.hpp; sourceTree = "<group>"; };
+		4316605F2D6D7E070085FB20 /* Utils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Utils.mm; sourceTree = "<group>"; };
+		431660602D6D7E070085FB20 /* zsign.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = zsign.hpp; sourceTree = "<group>"; };
+		431660612D6D7E070085FB20 /* zsign.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = zsign.mm; sourceTree = "<group>"; };
+		4316606F2D6D7E210085FB20 /* openssl.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = openssl.xcframework; sourceTree = "<group>"; };
 		43BD3D702D6D7A4300459757 /* NeoSigner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeoSigner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		43ED9E9B2D712E82007A352D /* Exceptions for "NeoSigner" folder in "NeoSigner" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 43BD3D6F2D6D7A4300459757 /* NeoSigner */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		43BD3D722D6D7A4300459757 /* NeoSigner */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				43ED9E9B2D712E82007A352D /* Exceptions for "NeoSigner" folder in "NeoSigner" target */,
+			);
 			path = NeoSigner;
 			sourceTree = "<group>";
 		};
@@ -23,16 +93,69 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				431661212D6D82320085FB20 /* openssl.xcframework in Frameworks */,
+				43A254002D6E72CE00DEE1C7 /* WelcomeSheet in Frameworks */,
+				43ECF0002D6E826C002DA79F /* Glur in Frameworks */,
+				43A253FD2D6E725800DEE1C7 /* ZIPFoundation in Frameworks */,
+				43A254552D6E737400DEE1C7 /* Vapor in Frameworks */,
+				43A254032D6E72DB00DEE1C7 /* Swifter in Frameworks */,
+				43ECF0812D6E84C0002DA79F /* NukeUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		431660532D6D7E070085FB20 /* common */ = {
+			isa = PBXGroup;
+			children = (
+				4316604C2D6D7E070085FB20 /* base64.h */,
+				4316604D2D6D7E070085FB20 /* base64.cpp */,
+				4316604E2D6D7E070085FB20 /* common.h */,
+				4316604F2D6D7E070085FB20 /* common.cpp */,
+				431660502D6D7E070085FB20 /* json.h */,
+				431660512D6D7E070085FB20 /* json.cpp */,
+				431660522D6D7E070085FB20 /* mach-o.h */,
+			);
+			path = common;
+			sourceTree = "<group>";
+		};
+		431660622D6D7E070085FB20 /* zsign */ = {
+			isa = PBXGroup;
+			children = (
+				431660532D6D7E070085FB20 /* common */,
+				431660542D6D7E070085FB20 /* archo.h */,
+				431660552D6D7E070085FB20 /* archo.cpp */,
+				431660562D6D7E070085FB20 /* bundle.h */,
+				431660572D6D7E070085FB20 /* bundle.cpp */,
+				431660582D6D7E070085FB20 /* macho.h */,
+				431660592D6D7E070085FB20 /* macho.cpp */,
+				4316605A2D6D7E070085FB20 /* openssl.h */,
+				4316605B2D6D7E070085FB20 /* openssl.cpp */,
+				4316605C2D6D7E070085FB20 /* signing.h */,
+				4316605D2D6D7E070085FB20 /* signing.cpp */,
+				4316605E2D6D7E070085FB20 /* Utils.hpp */,
+				4316605F2D6D7E070085FB20 /* Utils.mm */,
+				431660602D6D7E070085FB20 /* zsign.hpp */,
+				431660612D6D7E070085FB20 /* zsign.mm */,
+			);
+			path = zsign;
+			sourceTree = "<group>";
+		};
+		4316606E2D6D7E200085FB20 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4316606F2D6D7E210085FB20 /* openssl.xcframework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		43BD3D672D6D7A4300459757 = {
 			isa = PBXGroup;
 			children = (
+				431660622D6D7E070085FB20 /* zsign */,
 				43BD3D722D6D7A4300459757 /* NeoSigner */,
+				4316606E2D6D7E200085FB20 /* Frameworks */,
 				43BD3D712D6D7A4300459757 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -55,6 +178,7 @@
 				43BD3D6C2D6D7A4300459757 /* Sources */,
 				43BD3D6D2D6D7A4300459757 /* Frameworks */,
 				43BD3D6E2D6D7A4300459757 /* Resources */,
+				431661232D6D82320085FB20 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -65,6 +189,12 @@
 			);
 			name = NeoSigner;
 			packageProductDependencies = (
+				43A253FC2D6E725800DEE1C7 /* ZIPFoundation */,
+				43A253FF2D6E72CE00DEE1C7 /* WelcomeSheet */,
+				43A254022D6E72DB00DEE1C7 /* Swifter */,
+				43A254542D6E737400DEE1C7 /* Vapor */,
+				43ECEFFF2D6E826C002DA79F /* Glur */,
+				43ECF0802D6E84C0002DA79F /* NukeUI */,
 			);
 			productName = NeoSigner;
 			productReference = 43BD3D702D6D7A4300459757 /* NeoSigner.app */;
@@ -94,6 +224,14 @@
 			);
 			mainGroup = 43BD3D672D6D7A4300459757;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				43A253FB2D6E725800DEE1C7 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
+				43A253FE2D6E72CE00DEE1C7 /* XCRemoteSwiftPackageReference "Welcome-Sheet" */,
+				43A254012D6E72DB00DEE1C7 /* XCRemoteSwiftPackageReference "swifter" */,
+				43A254532D6E737400DEE1C7 /* XCRemoteSwiftPackageReference "vapor" */,
+				43ECEFFE2D6E826C002DA79F /* XCRemoteSwiftPackageReference "Glur" */,
+				43ECF07F2D6E84C0002DA79F /* XCRemoteSwiftPackageReference "Nuke" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 43BD3D712D6D7A4300459757 /* Products */;
 			projectDirPath = "";
@@ -119,6 +257,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				431660632D6D7E070085FB20 /* bundle.cpp in Sources */,
+				431660642D6D7E070085FB20 /* archo.cpp in Sources */,
+				431660652D6D7E070085FB20 /* base64.cpp in Sources */,
+				431660662D6D7E070085FB20 /* Utils.mm in Sources */,
+				431660672D6D7E070085FB20 /* signing.cpp in Sources */,
+				431660682D6D7E070085FB20 /* openssl.cpp in Sources */,
+				431660692D6D7E070085FB20 /* macho.cpp in Sources */,
+				4316606A2D6D7E070085FB20 /* zsign.mm in Sources */,
+				4316606B2D6D7E070085FB20 /* common.cpp in Sources */,
+				4316606C2D6D7E070085FB20 /* json.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -177,7 +325,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -234,7 +382,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -251,23 +399,28 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"NeoSigner/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = TA2N4LNLT8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NeoSigner/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = NeoSigner;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.0.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.NeoSign.NeoSigner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = NeoSigner/Other/bridge.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -280,23 +433,28 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"NeoSigner/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = TA2N4LNLT8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NeoSigner/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = NeoSigner;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.0.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.NeoSign.NeoSigner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = NeoSigner/Other/bridge.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -324,6 +482,90 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		43A253FB2D6E725800DEE1C7 /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/weichsel/ZIPFoundation";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.19;
+			};
+		};
+		43A253FE2D6E72CE00DEE1C7 /* XCRemoteSwiftPackageReference "Welcome-Sheet" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/MAJKFL/Welcome-Sheet";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+		43A254012D6E72DB00DEE1C7 /* XCRemoteSwiftPackageReference "swifter" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/httpswift/swifter";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.0;
+			};
+		};
+		43A254532D6E737400DEE1C7 /* XCRemoteSwiftPackageReference "vapor" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/vapor/vapor";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.113.2;
+			};
+		};
+		43ECEFFE2D6E826C002DA79F /* XCRemoteSwiftPackageReference "Glur" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/joogps/Glur";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.4;
+			};
+		};
+		43ECF07F2D6E84C0002DA79F /* XCRemoteSwiftPackageReference "Nuke" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kean/Nuke";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.8.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		43A253FC2D6E725800DEE1C7 /* ZIPFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 43A253FB2D6E725800DEE1C7 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
+			productName = ZIPFoundation;
+		};
+		43A253FF2D6E72CE00DEE1C7 /* WelcomeSheet */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 43A253FE2D6E72CE00DEE1C7 /* XCRemoteSwiftPackageReference "Welcome-Sheet" */;
+			productName = WelcomeSheet;
+		};
+		43A254022D6E72DB00DEE1C7 /* Swifter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 43A254012D6E72DB00DEE1C7 /* XCRemoteSwiftPackageReference "swifter" */;
+			productName = Swifter;
+		};
+		43A254542D6E737400DEE1C7 /* Vapor */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 43A254532D6E737400DEE1C7 /* XCRemoteSwiftPackageReference "vapor" */;
+			productName = Vapor;
+		};
+		43ECEFFF2D6E826C002DA79F /* Glur */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 43ECEFFE2D6E826C002DA79F /* XCRemoteSwiftPackageReference "Glur" */;
+			productName = Glur;
+		};
+		43ECF0802D6E84C0002DA79F /* NukeUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 43ECF07F2D6E84C0002DA79F /* XCRemoteSwiftPackageReference "Nuke" */;
+			productName = NukeUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 43BD3D682D6D7A4300459757 /* Project object */;
 }
