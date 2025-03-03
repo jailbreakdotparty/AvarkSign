@@ -93,7 +93,7 @@ struct SettingsView: View {
                         Text("[View the GitHub!](https://github.com/NeoSigniOS/NeoSigner)")
                     })
                     
-                    Section(footer: Text("NeoSigner Public Alpha v0.0.6\n[\"It actually signs!\"](https://www.idownloadblog.com/2024/12/29/mysign/)"), content: {})
+                    Section(footer: Text("NeoSigner Public Alpha v0.0.7\n[\"It actually signs!\"](https://www.idownloadblog.com/2024/12/29/mysign/)"), content: {})
                 }
             }
             .navigationTitle("Settings")
