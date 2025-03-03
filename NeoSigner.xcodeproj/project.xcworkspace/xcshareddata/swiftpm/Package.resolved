@@ -1,6 +1,15 @@
 {
-  "originHash" : "e0d119d3122e39fd335d8460c7a23269b67508ddb1bb5e27925b517d9fdaeef9",
+  "originHash" : "425584a2aa0c5fc4efbf73608d8e1b1ab531ca98851533366dddf93ac4dbe360",
   "pins" : [
+    {
+      "identity" : "ahdownloadbutton",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/amerhukic/AHDownloadButton",
+      "state" : {
+        "revision" : "48953ef014e46ba5caf9ea460e790005d20b87e9",
+        "version" : "1.3.0"
+      }
+    },
     {
       "identity" : "async-http-client",
       "kind" : "remoteSourceControl",

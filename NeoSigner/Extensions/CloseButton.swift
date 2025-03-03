@@ -10,7 +10,7 @@ struct CloseButton: View {
     @Environment(\.colorScheme) var cs
     var body: some View {
         Circle()
-            .fill(cs == .dark ? Color(UIColor.secondarySystemGroupedBackground) : Color(UIColor.systemGray).opacity(0.8))
+            .fill(cs == .dark ? Color(UIColor.secondarySystemGroupedBackground) : Color(UIColor.systemGray).opacity(0.4))
             .frame(width: 28, height: 28)
             .overlay(
                 Image(systemName: "xmark")

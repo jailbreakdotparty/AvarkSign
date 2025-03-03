@@ -52,10 +52,13 @@ struct RepoApp: Codable, Identifiable, Hashable {
     
     var version: String?
     var versionDate: String?
+    var date: String? // you're welcome realmzer
     var downloadURL: String?
     var size: Int?
     
     var versions: [RepoAppVersion]
+    
+    var screenshotURLs: [String]
     
     enum CodingKeys: String, CodingKey {
         case name
@@ -69,9 +72,11 @@ struct RepoApp: Codable, Identifiable, Hashable {
         case category
         case version
         case versionDate
+        case date
         case downloadURL
         case size
         case versions
+        case screenshotURLs
     }
     
     init(from decoder: Decoder) throws {
@@ -97,7 +102,17 @@ struct RepoApp: Codable, Identifiable, Hashable {
         self.category = try container.decodeIfPresent(String.self, forKey: .category)
         
         self.version = try container.decodeIfPresent(String.self, forKey: .version)
-        self.versionDate = try container.decodeIfPresent(String.self, forKey: .versionDate)
+        
+        self.date = try container.decodeIfPresent(String.self, forKey: .date)
+        
+        if let versionDate = try container.decodeIfPresent(String.self, forKey: .versionDate) {
+            self.versionDate = versionDate
+        } else if let date = self.date {
+            self.versionDate = date
+        } else {
+            self.date = "*No date provided.*"
+        }
+        
         self.downloadURL = try container.decodeIfPresent(String.self, forKey: .downloadURL)
         self.size = try container.decodeIfPresent(Int.self, forKey: .size)
         
@@ -111,6 +126,8 @@ struct RepoApp: Codable, Identifiable, Hashable {
                 size: self.size ?? 0
             ))
         }
+        
+        self.screenshotURLs = try container.decodeIfPresent([String].self, forKey: .screenshotURLs) ?? []
     }
     
     func getLatestVersion() -> RepoAppVersion? {

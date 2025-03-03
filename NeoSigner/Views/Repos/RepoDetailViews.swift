@@ -80,7 +80,7 @@ struct RepoDetailView: View {
                     if let website = repo.website {
                         Link(destination: URL(string: website)!) {
                             Image(systemName: "globe")
-                                .font(.headline)
+                                .foregroundStyle(repoColor)
                         }
                     }
                 }
@@ -92,52 +92,112 @@ struct RepoDetailView: View {
 struct AppDetailView: View {
     let app: RepoApp
     let repoColor: Color
+    @State private var showShareSheet: Bool = false
+    @State private var shareURL: String = ""
     
     var body: some View {
-        List {
-            HStack {
+        VStack {
+            List {
                 HStack {
-                    URLImageView(url: app.iconURL)
-                        .frame(width: 75, height: 75)
-                        .cornerRadius(16)
-                    
-                    VStack(alignment: .leading) {
-                        Text(app.name)
-                            .font(.system(size: 34, weight: .bold))
-                            .minimumScaleFactor(0.6)
-                            .lineLimit(1)
+                    VStack {
+                        HStack {
+                            URLImageView(url: app.iconURL)
+                                .frame(width: 75, height: 75)
+                                .cornerRadius(16)
+                            
+                            VStack(alignment: .leading) {
+                                Text(app.name)
+                                    .font(.system(size: 34, weight: .bold))
+                                    .minimumScaleFactor(0.6)
+                                    .lineLimit(1)
+                                    .foregroundStyle(repoColor)
+                                    .multilineTextAlignment(.leading)
+                                Text(LocalizedStringKey(app.subtitle ?? app.localizedDescription))
+                                    .minimumScaleFactor(0.6)
+                                    .lineLimit(2)
+                                    .truncationMode(.tail)
+                                    .opacity(0.6)
+                                    .foregroundStyle(repoColor)
+                                    .multilineTextAlignment(.leading)
+                            }
+                        }
+                    }
+                }
+                .padding(.top, 3.5)
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
+                
+                HStack {
+                    Button(action: {
+                        Haptic.shared.play(.rigid)
+                        var downloadURL = ""
+                        
+                        if let version = app.getLatestVersion() {
+                            downloadURL = version.downloadURL
+                        } else if let appDownloadURL = app.downloadURL, !appDownloadURL.isEmpty {
+                            downloadURL = appDownloadURL
+                        } else {
+                            Alertinator.shared.alert(title: "Error downloading app", body: "Failed to get app download URL!")
+                            return
+                        }
+                        
+                        Alertinator.shared.alert(title: "Debug info", body: "Download URL: \(downloadURL)\n\n\(DeviceInfo.niceVersionString)")
+                    }) {
+                        Text("Install")
+                            .font(.system(size: 20, weight: .medium))
+                            .padding(8)
+                    }
+                    .background(Color(UIColor.tertiarySystemFill))
+                    .clipShape(.capsule)
+                }
+                .listRowBackground(Color.clear)
+                
+                if !app.screenshotURLs.isEmpty {
+                    Section(header: Text("Screenshots"), content: {
+                        ScrollView(.horizontal, showsIndicators: true) {
+                            HStack(spacing: 10) {
+                                ForEach(app.screenshotURLs, id: \.self) { screenshotURL in
+                                    ScreenshotImageView(url: screenshotURL)
+                                        .cornerRadius(8)
+                                }
+                            }
+                            Spacer()
+                        }
+                    })
+                    .listRowBackground(Color.clear)
+                }
+            }
+        }
+        .tint(repoColor)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                HStack {
+                    Button(action: {
+                        Haptic.shared.play(.rigid)
+                        var downloadURL = ""
+                        
+                        if let version = app.getLatestVersion() {
+                            downloadURL = version.downloadURL
+                        } else if let appDownloadURL = app.downloadURL, !appDownloadURL.isEmpty {
+                            downloadURL = appDownloadURL
+                        } else {
+                            Alertinator.shared.alert(title: "Error sharing IPA", body: "Failed to get app download URL!")
+                            return
+                        }
+                        
+                        presentShareSheet(with: URL(string: downloadURL)!)
+                    }) {
+                        Image(systemName: "square.and.arrow.up")
                             .foregroundStyle(repoColor)
-                            .multilineTextAlignment(.leading)
-                        Text(LocalizedStringKey(app.subtitle ?? app.localizedDescription))
-                            .minimumScaleFactor(0.6)
-                            .lineLimit(2)
-                            .truncationMode(.tail)
-                            .opacity(0.6)
-                            .foregroundStyle(repoColor)
-                            .multilineTextAlignment(.leading)
                     }
                 }
             }
-            .padding(.vertical, 3.5)
-            .listRowBackground(Color.clear)
-            
-            Section(header: Text("Actions"), content: {
-                Button("Install", action: {
-                    var downloadURL = ""
-                    
-                    if let version = app.getLatestVersion() {
-                        downloadURL = version.downloadURL
-                    } else if let appDownloadURL = app.downloadURL, !appDownloadURL.isEmpty {
-                        downloadURL = appDownloadURL
-                    } else {
-                        Alertinator.shared.alert(title: "Error downloading app", body: "Failed to get app download URL!")
-                        return
-                    }
-                    
-                    Alertinator.shared.alert(title: "Debug info", body: "Download URL: \(downloadURL)\n\n\(DeviceInfo.niceVersionString)")
-                })
-            })
         }
     }
 }
 
+#Preview {
+    NavigationStack {
+        RepoDetailView(repo: RepoManager().repos[1])
+    }
+}

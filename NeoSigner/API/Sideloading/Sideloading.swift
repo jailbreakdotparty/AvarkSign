@@ -300,7 +300,7 @@ public class Sideloading: ObservableObject {
         }
     }
     
-    func updateLocalInstallCertificate(hasCert: Bool) async throws {
+    func updateLocalInstallCertificate() async throws {
         let fileManager = FileManager.default
         let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
         let certsDirectory = documentsDirectory.appendingPathComponent("certificates/")
@@ -357,8 +357,6 @@ public class Sideloading: ObservableObject {
             try cert.info.domains.commonName.write(to: certURL.appendingPathComponent("cmnName"), atomically: true, encoding: .utf8)
             
             Alertinator.shared.alert(title: "Success!", body: "Successfully fetched SSL certificates!")
-            var hasCert = hasCert
-            hasCert = true
         } catch {
             if let decodingError = error as? DecodingError {
                 switch decodingError {

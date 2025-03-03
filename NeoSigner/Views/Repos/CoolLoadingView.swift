@@ -66,15 +66,16 @@ struct CoolLoadingView: View {
                 .buttonStyle(.plain)
                 .navigationTitle("Installing \(appName)...")
                 .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing, content: {
-                        Button(action: {
-                            dismiss()
-                        }, label: {
-                            CloseButton()
-                        })
-                    })
-                }
+//                .toolbar {
+//                    ToolbarItem(placement: .navigationBarTrailing, content: {
+//                        Button(action: {
+//                            dismiss()
+//                        }, label: {
+//                            CloseButton()
+//                        })
+//                    })
+//                }
+                .background(Color.black)
             }
         }
     }
@@ -118,12 +119,11 @@ struct CoolLoadingView: View {
                         }
                         try? await Task.sleep(nanoseconds: 16_000_000)
                     }
-                    await MainActor.run {
-                        progress = targetProgress
-                        if index == 0 {
-                            progress = 0
-                        }
-                    }
+                }
+                
+                progress = targetProgress
+                if index == 0 {
+                    progress = 0
                 }
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + duration) {

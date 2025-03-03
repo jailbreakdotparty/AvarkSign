@@ -23,6 +23,7 @@
 		43A254002D6E72CE00DEE1C7 /* WelcomeSheet in Frameworks */ = {isa = PBXBuildFile; productRef = 43A253FF2D6E72CE00DEE1C7 /* WelcomeSheet */; };
 		43A254032D6E72DB00DEE1C7 /* Swifter in Frameworks */ = {isa = PBXBuildFile; productRef = 43A254022D6E72DB00DEE1C7 /* Swifter */; };
 		43A254552D6E737400DEE1C7 /* Vapor in Frameworks */ = {isa = PBXBuildFile; productRef = 43A254542D6E737400DEE1C7 /* Vapor */; };
+		43B6980B2D7556CB00BB0091 /* AHDownloadButton in Frameworks */ = {isa = PBXBuildFile; productRef = 43B6980A2D7556CB00BB0091 /* AHDownloadButton */; };
 		43ECF0002D6E826C002DA79F /* Glur in Frameworks */ = {isa = PBXBuildFile; productRef = 43ECEFFF2D6E826C002DA79F /* Glur */; };
 		43ECF0812D6E84C0002DA79F /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 43ECF0802D6E84C0002DA79F /* NukeUI */; };
 /* End PBXBuildFile section */
@@ -98,6 +99,7 @@
 				43ECF0002D6E826C002DA79F /* Glur in Frameworks */,
 				43A253FD2D6E725800DEE1C7 /* ZIPFoundation in Frameworks */,
 				43A254552D6E737400DEE1C7 /* Vapor in Frameworks */,
+				43B6980B2D7556CB00BB0091 /* AHDownloadButton in Frameworks */,
 				43A254032D6E72DB00DEE1C7 /* Swifter in Frameworks */,
 				43ECF0812D6E84C0002DA79F /* NukeUI in Frameworks */,
 			);
@@ -195,6 +197,7 @@
 				43A254542D6E737400DEE1C7 /* Vapor */,
 				43ECEFFF2D6E826C002DA79F /* Glur */,
 				43ECF0802D6E84C0002DA79F /* NukeUI */,
+				43B6980A2D7556CB00BB0091 /* AHDownloadButton */,
 			);
 			productName = NeoSigner;
 			productReference = 43BD3D702D6D7A4300459757 /* NeoSigner.app */;
@@ -231,6 +234,7 @@
 				43A254532D6E737400DEE1C7 /* XCRemoteSwiftPackageReference "vapor" */,
 				43ECEFFE2D6E826C002DA79F /* XCRemoteSwiftPackageReference "Glur" */,
 				43ECF07F2D6E84C0002DA79F /* XCRemoteSwiftPackageReference "Nuke" */,
+				43B698092D7556CB00BB0091 /* XCRemoteSwiftPackageReference "AHDownloadButton" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 43BD3D712D6D7A4300459757 /* Products */;
@@ -516,6 +520,14 @@
 				minimumVersion = 4.113.2;
 			};
 		};
+		43B698092D7556CB00BB0091 /* XCRemoteSwiftPackageReference "AHDownloadButton" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/amerhukic/AHDownloadButton";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.0;
+			};
+		};
 		43ECEFFE2D6E826C002DA79F /* XCRemoteSwiftPackageReference "Glur" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/joogps/Glur";
@@ -554,6 +566,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 43A254532D6E737400DEE1C7 /* XCRemoteSwiftPackageReference "vapor" */;
 			productName = Vapor;
+		};
+		43B6980A2D7556CB00BB0091 /* AHDownloadButton */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 43B698092D7556CB00BB0091 /* XCRemoteSwiftPackageReference "AHDownloadButton" */;
+			productName = AHDownloadButton;
 		};
 		43ECEFFF2D6E826C002DA79F /* Glur */ = {
 			isa = XCSwiftPackageProductDependency;

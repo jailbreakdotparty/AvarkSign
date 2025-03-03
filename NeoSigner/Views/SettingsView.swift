@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @AppStorage("installMethod") private var installMethod: Int = 1 // 0 = Remote, 1 = Local
+    @AppStorage("installMethod") private var installMethod: Int = 0 // 0 = Remote, 1 = Local
     @AppStorage("hasLocalInstallCert") private var hasLocalInstallCert: Bool = false
+    
+    @State private var showCoolLoadingSheet: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -44,7 +46,7 @@ struct SettingsView: View {
                         Button(action: {
                             Task {
                                 do {
-                                    try await Sideloading.shared.updateLocalInstallCertificate(hasCert: hasLocalInstallCert)
+                                    try await Sideloading.shared.updateLocalInstallCertificate()
                                     hasLocalInstallCert = true
                                 } catch {
                                     print(error)
@@ -74,7 +76,9 @@ struct SettingsView: View {
                     })
                     
                     Section(header: Text("Debug"), content: {
-                        NavigationLink(destination: CoolLoadingView()) {
+                        Button(action: {
+                            showCoolLoadingSheet = true
+                        }) {
                             VStack(alignment: .leading) {
                                 Text("Open cool loading view")
                                 Text("(the animations are fucked rn)")
@@ -93,6 +97,9 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
+            .sheet(isPresented: $showCoolLoadingSheet, content: {
+                CoolLoadingView()
+            })
         }
     }
 }
