@@ -214,13 +214,13 @@ class RepoManager: ObservableObject {
         }
     }
     
-    private func saveRepos() {
+    func saveRepos() {
         if let encoded = try? JSONEncoder().encode(repos) {
             UserDefaults.standard.set(encoded, forKey: userDefaultsKey)
         }
     }
     
-    private func loadRepos() {
+    func loadRepos() {
         if let data = UserDefaults.standard.data(forKey: userDefaultsKey) {
             if let decoded = try? JSONDecoder().decode([Repo].self, from: data) {
                 self.repos = decoded
@@ -229,7 +229,12 @@ class RepoManager: ObservableObject {
     }
     
     func deleteRepo(at offsets: IndexSet) {
-        repos.remove(atOffsets: offsets)
+        for i in offsets.sorted(by: >) {
+            if i < repos.count {
+                let appToDelete = repos[i]
+                repos.remove(at: i)
+            }
+        }
         saveRepos()
     }
     

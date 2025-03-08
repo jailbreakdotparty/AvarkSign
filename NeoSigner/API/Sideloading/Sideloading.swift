@@ -16,80 +16,30 @@ public class Sideloading: ObservableObject {
     struct AppCustomizationOptions: Codable, Hashable {
         var appName: String?
         var bundleID: String?
-        var bundleVersion: Double?
+        var bundleVersion: String?
     }
     
-    class AppInfo: ObservableObject, Identifiable {
-        var id = UUID()
-        
-        @Published var displayName: String
-        @Published var bundleID: String
-        @Published var bundleVersion: String
-        @Published var iconURL: URL
-        
-        init(displayName: String, bundleID: String, bundleVersion: String, iconURL: URL) {
-            self.displayName = displayName
-            self.bundleID = bundleID
-            self.bundleVersion = bundleVersion
-            self.iconURL = iconURL
-        }
-    }
+    var hasStartedServer: Bool = false
+    var hasDoneRemoteInstallSoWeCanCloseTheFuckingServer: Bool = false
     
-    func getAppInfo(ipaPath: URL) throws -> AppInfo {
-        let accessing = ipaPath.startAccessingSecurityScopedResource()
-        defer {
-            if accessing {
-                ipaPath.stopAccessingSecurityScopedResource()
-            }
-        }
-        
-        let fileManager = FileManager.default
-        
-        do {
-            let tempDirectory = fileManager.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-            try fileManager.createDirectory(at: tempDirectory, withIntermediateDirectories: true, attributes: nil)
-            
-            try fileManager.unzipItem(at: ipaPath, to: tempDirectory)
-            
-            let enumerator = fileManager.enumerator(at: tempDirectory, includingPropertiesForKeys: nil, options: [], errorHandler: nil)
-            let appFolderURL = enumerator!.allObjects.first(where: { ($0 as? URL)?.pathExtension == "app" }) as? URL
-            
-            let displayName = extractInfoPlistField(appFolderURL: appFolderURL!, field: "CFBundleDisplayName")
-            let bundleID = extractInfoPlistField(appFolderURL: appFolderURL!, field: "CFBundleIdentifier")
-            let bundleVersion = extractInfoPlistField(appFolderURL: appFolderURL!, field: "CFBundleVersion")
-            let iconURL = extractAppIcon(appFolderURL: appFolderURL!)
-            
-            return AppInfo(displayName: displayName, bundleID: bundleID, bundleVersion: bundleVersion, iconURL: iconURL)
-        } catch {
-            print("Failed to extract app bundle to temporary folder! Check Xcode logs for more details.")
-            throw error
-        }
-    }
-    
-    func sideload(ipaPath: URL, cert: Certificate, customizationOptions: AppCustomizationOptions, installMethod: Int) -> Bool {
+    func sideload(app: LibraryApp, cert: Certificate, customizationOptions: AppCustomizationOptions? = nil, installMethod: Int) -> Bool {
         let mpPath: URL
         let p12Path: URL
         let p12Pass: String
         
-        print("[-] Sideloading started.")
+        var appURL = app.bundleURL
         
-        print("[-] Attempting to access selected IPA...")
-        let accessing = ipaPath.startAccessingSecurityScopedResource()
-        defer {
-            if accessing {
-                ipaPath.stopAccessingSecurityScopedResource()
-            }
-        }
+        print("[-] Sideloading started.")
         
         let fileManager = FileManager.default
         
         print("[-] Fetching MobileProvision and P12 details from selected certificate...")
         do {
-            let certURL = URL(fileURLWithPath: cert.path)
-                    
+            let certURL = cert.url
+            
             let passwordData = try Data(contentsOf: certURL.appendingPathComponent("p12_password"))
             p12Pass = String(data: passwordData, encoding: .utf8) ?? ""
-                    
+            
             mpPath = certURL.appendingPathComponent("mp.mobileprovision")
             p12Path = certURL.appendingPathComponent("cert.p12")
         } catch {
@@ -98,60 +48,48 @@ public class Sideloading: ObservableObject {
             return false
         }
         
-        guard let destinationPath = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
+        guard let destinationPath = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("tmp/") else {
             print("[!] Documents directory not found")
             return false
         }
         
-        print("[-] Destination path for extraction: \(destinationPath.path)")
-        
         print("[-] Clearing out old files...")
         cleanup()
         
-        do {
-            try fileManager.unzipItem(at: ipaPath, to: destinationPath)
-            print("[*] Extraction successful at \(destinationPath.path)")
-            
-            guard let enumerator = fileManager.enumerator(at: destinationPath, includingPropertiesForKeys: nil, options: [], errorHandler: nil),
-                  let appFolderURL = enumerator.allObjects.first(where: { ($0 as? URL)?.pathExtension == "app" }) as? URL else {
-                print("[!] Info.plist does not fucking exist. The .app folder doesn't exist either. What the fuck?")
+        Task {
+            let code = zsign(appURL.path, mpPath.path, p12Path.path, p12Pass, customizationOptions?.bundleID ?? "", customizationOptions?.appName ?? "", customizationOptions?.bundleVersion ?? "", true)
+            if code == 0 {
+                print("[*] zsign returned 0, this is good.")
+                let signedIPAPath = destinationPath.appendingPathComponent("signed.ipa")
                 
-                return false
-            }
-            
-            let infoPlistURL = appFolderURL.appendingPathComponent("Info.plist")
-            
-            guard fileManager.fileExists(atPath: infoPlistURL.path) else {
-                print("[!] Info.plist does not fucking exist.")
-                return false
-            }
-            
-            Task {
-                let code = zsign(appFolderURL.path, mpPath.path, p12Path.path, p12Pass, customizationOptions.bundleID ?? "", customizationOptions.appName ?? "", customizationOptions.bundleVersion != nil ? String(format: "%.1f", customizationOptions.bundleVersion!) : "", true)
-                if code == 0 {
-                    print("[*] zsign returned 0, this is good.")
-                    let signedIPAPath = destinationPath.appendingPathComponent("signed.ipa")
-                    
-                    let payloadPath = destinationPath.appendingPathComponent("Payload")
-                    
-                    if !fileManager.fileExists(atPath: payloadPath.path) {
-                        print("[!] Payload directory not found.")
-                        return false
-                    }
-                    
+                let payloadPath = destinationPath.appendingPathComponent("Payload")
+                
+                if !fileManager.fileExists(atPath: payloadPath.path) {
                     do {
-                        try fileManager.zipItem(at: payloadPath, to: signedIPAPath)
-                        print("[*] Zipping Payload folder successful. Signed IPA path: \(signedIPAPath.path)")
+                        try fileManager.createDirectory(at: payloadPath, withIntermediateDirectories: true)
+                        try fileManager.copyItem(at: appURL, to: payloadPath.appendingPathComponent(appURL.lastPathComponent))
+                        appURL = payloadPath.appendingPathComponent(appURL.lastPathComponent)
                     } catch {
-                        print("[!] Failed to zip the Payload folder: \(error)")
+                        print("[!] Failed to repackage IPA!")
                         return false
                     }
-                    
-                    let bundleId = extractInfoPlistField(appFolderURL: appFolderURL, field: "CFBundleIdentifier")
-                    
-                    let bundleVersion = extractInfoPlistField(appFolderURL: appFolderURL, field: "CFBundleVersion")
-                    
-                    let plistContent = """
+                }
+                
+                do {
+                    try fileManager.zipItem(at: payloadPath, to: signedIPAPath)
+                    print("[*] Zipping Payload folder successful. Signed IPA path: \(signedIPAPath.path)")
+                } catch {
+                    print("[!] Failed to zip the Payload folder: \(error)")
+                    return false
+                }
+                
+                let infoPlistURL = appURL.appendingPathComponent("Info.plist")
+                
+                let bundleId = extractFieldFromPlist(at: infoPlistURL, field: "CFBundleIdentifier")
+                
+                let bundleVersion = extractFieldFromPlist(at: infoPlistURL, field: "CFBundleVersion")
+                
+                let plistContent = """
         <?xml version="1.0" encoding="UTF-8"?>
             <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
             "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -166,7 +104,7 @@ public class Sideloading: ObservableObject {
                                     <key>kind</key>
                                     <string>software-package</string>
                                     <key>url</key>
-                                    <string>\(installMethod == 1 ? "https://neosigner.localhost.direct:8080/signed.ipa" : "http://localhost:8080/signed.ipa")</string>
+                                    <string>\(installMethod == 1 ? "https://neosigner.backloop.dev:8080/signed.ipa" : "http://localhost:8080/signed.ipa")</string>
                                 </dict>
                                 <dict>
                                     <key>kind</key>
@@ -174,7 +112,7 @@ public class Sideloading: ObservableObject {
                                     <key>needs-shine</key>
                                     <false/>
                                     <key>url</key>
-                                    <string>\(installMethod == 1 ? "https://octopus.localhost.direct:8080/appIcon.png" : "http://localhost:8080/appIcon.png")</string>
+                                    <string>\(installMethod == 1 ? "https://neosigner.backloop.dev:8080/appIcon.png" : "http://localhost:8080/appIcon.png")</string>
                                 </dict>
                                 <dict>
                                     <key>kind</key>
@@ -182,7 +120,7 @@ public class Sideloading: ObservableObject {
                                     <key>needs-shine</key>
                                     <false/>
                                     <key>url</key>
-                                    <string>\(installMethod == 1 ? "https://octopus.localhost.direct:8080/appIcon.png" : "http://localhost:8080/appIcon.png")</string>
+                                    <string>\(installMethod == 1 ? "https://neosigner.backloop.dev:8080/appIcon.png" : "http://localhost:8080/appIcon.png")</string>
                                 </dict>
                             </array>
                             <key>metadata</key>
@@ -194,62 +132,73 @@ public class Sideloading: ObservableObject {
                                 <key>kind</key>
                                 <string>software</string>
                                 <key>title</key>
-                                <string>\(extractInfoPlistField(appFolderURL: appFolderURL, field: "CFBundleDisplayName"))</string>
+                                <string>\(extractFieldFromPlist(at: infoPlistURL, field: "CFBundleDisplayName"))</string>
                             </dict>
                         </dict>
                     </array>
                 </dict>
             </plist>
         """
-                    if let plistPath = createPlistFile(content: plistContent, destinationPath: destinationPath) {
-                        print("[*] Installation manifest created at path: \(plistPath)")
+                if let plistPath = createPlistFile(content: plistContent, destinationPath: destinationPath) {
+                    print("[*] Installation manifest created at path: \(plistPath)")
+                    var server: HttpServer = HttpServer()
+                    
+//                    if hasStartedServer && hasDoneRemoteInstallSoWeCanCloseTheFuckingServer {
+//                        print("[*] Stopping server for remote install...")
+//                        server.stop()
+//                        hasStartedServer = false
+//                        hasDoneRemoteInstallSoWeCanCloseTheFuckingServer = false
+//                    }
+                    
+                    if installMethod == 1 {
+                        do {
+                            let serverBundle = try NeoServer.shared.setupServerFiles(ipaPath: signedIPAPath, appIconPath: extractAppIcon(appFolderURL: appURL), manifestPath: URL(fileURLWithPath: plistPath))
+                            NeoServer.shared.startServer(serverBundle)
+                        } catch {
+                            print("[!] Failed to start server!")
+                            print(error)
+                            return false
+                        }
                         
-                        if installMethod == 1 {
-                            do {
-                                let serverBundle = try NeoServer.shared.setupServerFiles(ipaPath: signedIPAPath, appIconPath: extractAppIcon(appFolderURL: appFolderURL), manifestPath: URL(fileURLWithPath: plistPath))
-                                NeoServer.shared.startServer(serverBundle)
-                            } catch {
-                                print("[!] Failed to start server!")
-                                print(error)
-                                return false
-                            }
-                            
-                            print("[*] Installing...")
-                            await UIApplication.shared.open(NeoServer.shared.installURL)
-                        } else if installMethod == 0 {
-                            var server: HttpServer = HttpServer()
+                        print("[*] Installing...")
+                        await UIApplication.shared.open(NeoServer.shared.installURL)
+                    } else if installMethod == 0 {
+                        if !hasStartedServer {
                             do {
                                 try server.start(8080)
+                                hasStartedServer = true
                                 print("[*] HTTP server started")
                             } catch {
                                 print("[!] Failed to start server.")
                                 return false
                             }
-                            
-                            server["/" + "signed.ipa"] = shareFile(signedIPAPath.path)
-                            server["" + "appIcon.png"] = shareFile(extractAppIcon(appFolderURL: appFolderURL).path)
-                            server["/install.plist"] = shareFile(plistPath)
-                            
-                            print("[*] Installing...")
-                            await UIApplication.shared.open(URL(string: "itms-services://?action=download-manifest&url=https://jailbreak.party/install")!)
-                        } else {
-                            print("what the sigma")
                         }
-                        print("[*] Success!")
-                        return true
+                        
+                        server["/" + "signed.ipa"] = shareFile(signedIPAPath.path)
+                        server["" + "appIcon.png"] = shareFile(extractAppIcon(appFolderURL: appURL).path)
+                        server["/install.plist"] = shareFile(plistPath)
+                        
+                        print("[*] Installing...")
+                        _ = await MainActor.run {
+                            Task {
+                                await UIApplication.shared.open(URL(string: "itms-services://?action=download-manifest&url=https://jailbreak.party/install")!)
+                                hasDoneRemoteInstallSoWeCanCloseTheFuckingServer = true
+                            }
+                        }
+                    } else {
+                        print("what the sigma")
                     }
-                } else if (code == -1) {
-                    print("[!] zsign exited with code -1. This is bad. Check Xcode logs for more details.")
-                    return false
-                } else {
-                    print("[!] zsign exited with code \(code)")
-                    return false
+                    print("[*] Success!")
+                    return true
                 }
-                return true
+            } else if (code == -1) {
+                print("[!] zsign exited with code -1. This is bad. Check Xcode logs for more details.")
+                return false
+            } else {
+                print("[!] zsign exited with code \(code)")
+                return false
             }
-        } catch {
-            print("[!] Sideloading failed. Check Xcode logs for more details. \(error)")
-            return false
+            return true
         }
         
         return false
@@ -275,28 +224,29 @@ public class Sideloading: ObservableObject {
     
     func cleanup() {
         let fileManager = FileManager.default
+        let allowedPaths = ["certificates", "apps"]
+        
         do {
             guard let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
-                print("Documents directory not found")
                 return
             }
 
             let filePaths = try fileManager.contentsOfDirectory(atPath: documentsDirectory.path)
 
             for filePath in filePaths {
-                let fullFilePath = documentsDirectory.appendingPathComponent(filePath).path
-                
-                if filePath != "certificates" {
+                if !allowedPaths.contains(filePath) {
+                    let fullFilePath = documentsDirectory.appendingPathComponent(filePath).path
+                    
                     do {
                         try fileManager.removeItem(atPath: fullFilePath)
-                        print("[cleanup] \(filePath) has been deleted.")
+                        print("[cleanup] successfully removed \(filePath).")
                     } catch {
-                        print("Error deleting \(filePath): \(error)")
+                        print("[cleanup] failed to delete \(filePath): \(error)")
                     }
                 }
             }
         } catch {
-            print("Error accessing documents directory: \(error)")
+            print("[cleanup] epic fail!: \(error)")
         }
     }
     
@@ -397,21 +347,12 @@ public class Sideloading: ObservableObject {
         return iconFileURL
     }
     
-    func extractInfoPlistField(appFolderURL: URL, field: String) -> String {
-        let fileManager = FileManager.default
-        
-        let infoPlistURL = appFolderURL.appendingPathComponent("Info.plist")
-        
-        guard fileManager.fileExists(atPath: infoPlistURL.path) else {
-            print("Info.plist not found in the app bundle.")
-            return ""
-        }
-        
-        guard let infoPlistData = try? Data(contentsOf: infoPlistURL),
+    func extractFieldFromPlist(at url: URL, field: String) -> String {        
+        guard let infoPlistData = try? Data(contentsOf: url),
               let infoPlist = try? PropertyListSerialization.propertyList(from: infoPlistData, options: [], format: nil) as? [String: Any],
               let fieldValue = infoPlist[field] as? String else {
-            print("Could not get field from the Info.plist.")
-            return ""
+            print("Failed to extract field from \(url.lastPathComponent)")
+            return "unknown"
         }
         
         return fieldValue

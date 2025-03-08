@@ -12,6 +12,8 @@ struct SettingsView: View {
     @AppStorage("hasLocalInstallCert") private var hasLocalInstallCert: Bool = false
     
     @State private var showCoolLoadingSheet: Bool = false
+    @State private var showCertImportSheet: Bool = false
+    @StateObject private var certManager = CertificateManager()
     
     var body: some View {
         NavigationStack {
@@ -72,7 +74,24 @@ struct SettingsView: View {
                     })
                     
                     Section(header: Text("Certificates"), content: {
-                        AddCertificateCard()
+                        if certManager.certificates.isEmpty {
+                            AddCertificateCard(certManager: certManager)
+                        } else {
+                            ForEach(certManager.certificates) { cert in
+                                CertificateSelectionCard(certManager: certManager, certificate: cert)
+                            }
+                            .onDelete(perform: certManager.deleteCert)
+                            
+                            Button(action: {
+                                showCertImportSheet = true
+                            }) {
+                                HStack {
+                                    Image(systemName: "plus.circle")
+                                        .imageScale(.large)
+                                    Text("Add new certificate")
+                                }
+                            }
+                        }
                     })
                     
                     Section(header: Text("Debug"), content: {
@@ -86,6 +105,57 @@ struct SettingsView: View {
                                     .foregroundStyle(.secondary)
                             }
                         }
+                        
+                        Button(action: {
+                            let fileManager = FileManager.default
+                            let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+                            let libraryManager = LibraryManager()
+                            let repoManager = RepoManager()
+
+                            do {
+                                let filePaths = try fileManager.contentsOfDirectory(atPath: documentsDirectory.path)
+                                
+                                for filePath in filePaths {
+                                    let fullFilePath = documentsDirectory.appendingPathComponent(filePath).path
+                                    try fileManager.removeItem(atPath: fullFilePath)
+                                }
+                                
+                                libraryManager.apps = []
+                                libraryManager.saveApps()
+                                
+                                repoManager.repos = []
+                                repoManager.saveRepos()
+                                
+                                certManager.certificates = []
+                                certManager.saveCertificates()
+                                
+                                Alertinator.shared.alert(title: "Success!", body: "Successfully cleared all backend data. Please restart the app.", action: {
+                                    exitApp()
+                                })
+                            } catch {
+                                print(error)
+                                Alertinator.shared.alert(title: "Error!", body: "Failed to clear backend data: \(error.localizedDescription).")
+                            }
+                        }) {
+                            VStack(alignment: .leading) {
+                                Text("Clear all backend data")
+                                Text("This will remove all imported repos, apps, and certificates.")
+                                    .font(.footnote)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    })
+                    
+                    Section(header: Text("Logs"), content: {
+                        HStack {
+                            Spacer()
+                            ZStack {
+                                LogView()
+                                    .padding(0.25)
+                                    .frame(width: 340, height: 340)
+                            }
+                            Spacer()
+                        }
                     })
                     
                     Section(header: Text("Socials"), content: {
@@ -93,12 +163,15 @@ struct SettingsView: View {
                         Text("[View the GitHub!](https://github.com/NeoSigniOS/NeoSigner)")
                     })
                     
-                    Section(footer: Text("NeoSigner Public Alpha v0.0.7\n[\"It actually signs!\"](https://www.idownloadblog.com/2024/12/29/mysign/)"), content: {})
+                    Section(footer: Text("NeoSigner Public Alpha v0.0.8\n[\"It actually signs!\"](https://www.idownloadblog.com/2024/12/29/mysign/)"), content: {})
                 }
             }
             .navigationTitle("Settings")
             .sheet(isPresented: $showCoolLoadingSheet, content: {
                 CoolLoadingView()
+            })
+            .sheet(isPresented: $showCertImportSheet, content: {
+                ImportCertificateView(certManager: certManager)
             })
         }
     }

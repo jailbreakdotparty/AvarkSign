@@ -24,6 +24,8 @@ private var welcomeSheetPages = [
     ])
 ]
 
+var weOnADebugBuild: Bool = false
+
 @main
 struct NeoSignerApp: App {
     @AppStorage("isFirstLaunch") var isFirstLaunch: Bool = true
@@ -34,6 +36,12 @@ struct NeoSignerApp: App {
         if let fixMethod = class_getInstanceMethod(UIDocumentPickerViewController.self, Selector(("fix_initForOpeningContentTypes:asCopy:"))), let origMethod = class_getInstanceMethod(UIDocumentPickerViewController.self, #selector(UIDocumentPickerViewController.init(forOpeningContentTypes:asCopy:))) {
             method_exchangeImplementations(origMethod, fixMethod)
         }
+        
+        #if DEBUG
+        weOnADebugBuild = true
+        #else
+        weOnADebugBuild = false
+        #endif
     }
     
     var body: some Scene {
@@ -41,6 +49,7 @@ struct NeoSignerApp: App {
             ContentView()
                 .welcomeSheet(isPresented: $showWelcomeSheet, preferredColorScheme: UITraitCollection.current.userInterfaceStyle == .dark ? .dark : .light, pages: welcomeSheetPages)
                 .onAppear(perform: {
+                    if weOnADebugBuild { print("We're on a Debug build!") }
                     if isFirstLaunch {
                         showWelcomeSheet = true
                     } else {

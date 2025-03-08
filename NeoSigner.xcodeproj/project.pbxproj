@@ -19,6 +19,7 @@
 		4316606C2D6D7E070085FB20 /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431660512D6D7E070085FB20 /* json.cpp */; };
 		431661212D6D82320085FB20 /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4316606F2D6D7E210085FB20 /* openssl.xcframework */; };
 		431661222D6D82320085FB20 /* openssl.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4316606F2D6D7E210085FB20 /* openssl.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		4349AA522D78092F00CB4576 /* AssetCatalogWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = 4349AA512D78092F00CB4576 /* AssetCatalogWrapper */; };
 		43A253FD2D6E725800DEE1C7 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 43A253FC2D6E725800DEE1C7 /* ZIPFoundation */; };
 		43A254002D6E72CE00DEE1C7 /* WelcomeSheet in Frameworks */ = {isa = PBXBuildFile; productRef = 43A253FF2D6E72CE00DEE1C7 /* WelcomeSheet */; };
 		43A254032D6E72DB00DEE1C7 /* Swifter in Frameworks */ = {isa = PBXBuildFile; productRef = 43A254022D6E72DB00DEE1C7 /* Swifter */; };
@@ -96,6 +97,7 @@
 			files = (
 				431661212D6D82320085FB20 /* openssl.xcframework in Frameworks */,
 				43A254002D6E72CE00DEE1C7 /* WelcomeSheet in Frameworks */,
+				4349AA522D78092F00CB4576 /* AssetCatalogWrapper in Frameworks */,
 				43ECF0002D6E826C002DA79F /* Glur in Frameworks */,
 				43A253FD2D6E725800DEE1C7 /* ZIPFoundation in Frameworks */,
 				43A254552D6E737400DEE1C7 /* Vapor in Frameworks */,
@@ -198,6 +200,7 @@
 				43ECEFFF2D6E826C002DA79F /* Glur */,
 				43ECF0802D6E84C0002DA79F /* NukeUI */,
 				43B6980A2D7556CB00BB0091 /* AHDownloadButton */,
+				4349AA512D78092F00CB4576 /* AssetCatalogWrapper */,
 			);
 			productName = NeoSigner;
 			productReference = 43BD3D702D6D7A4300459757 /* NeoSigner.app */;
@@ -235,6 +238,7 @@
 				43ECEFFE2D6E826C002DA79F /* XCRemoteSwiftPackageReference "Glur" */,
 				43ECF07F2D6E84C0002DA79F /* XCRemoteSwiftPackageReference "Nuke" */,
 				43B698092D7556CB00BB0091 /* XCRemoteSwiftPackageReference "AHDownloadButton" */,
+				4349AA502D78092F00CB4576 /* XCLocalSwiftPackageReference "../PrivateKits" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 43BD3D712D6D7A4300459757 /* Products */;
@@ -420,7 +424,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.0.7;
+				MARKETING_VERSION = 0.0.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.NeoSign.NeoSigner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -454,7 +458,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.0.7;
+				MARKETING_VERSION = 0.0.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.NeoSign.NeoSigner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -486,6 +490,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		4349AA502D78092F00CB4576 /* XCLocalSwiftPackageReference "../PrivateKits" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../PrivateKits;
+		};
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
 		43A253FB2D6E725800DEE1C7 /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
@@ -547,6 +558,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		4349AA512D78092F00CB4576 /* AssetCatalogWrapper */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AssetCatalogWrapper;
+		};
 		43A253FC2D6E725800DEE1C7 /* ZIPFoundation */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 43A253FB2D6E725800DEE1C7 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;

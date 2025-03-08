@@ -12,13 +12,34 @@ import UIKit
 struct Certificate: Codable, Identifiable, Hashable {
     var id = UUID()
     var name: String
-    var path: String
+    var url: URL
 }
 
-// TODO: We probably shouldn't compress the cert info to a ZIP and extract it every time we need it. If the user needs to share the cert, then we can compress it. This was overall a really stupid decision I made when making Octopus private alpha 2.
+extension String {
+    func scanUpTo(_ string: String) -> String.Index? {
+        guard let index = self.range(of: string)?.lowerBound else {
+            return nil
+        }
+        
+        return index
+    }
+}
 
 class CertificateManager: ObservableObject {
     @Published var certificates: [Certificate] = []
+    @Published var activeCertificate: Certificate? {
+        didSet {
+            if let selectedID = activeCertificate?.id {
+                UserDefaults.standard.set(selectedID.uuidString, forKey: "activeCertificateID")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "activeCertificateID")
+            }
+        }
+    }
+
+    func selectCertificate(_ certificate: Certificate) {
+        activeCertificate = certificate
+    }
     
     private let fileManager = FileManager.default
     private let userDefaultsKey = "customCertificates"
@@ -27,7 +48,7 @@ class CertificateManager: ObservableObject {
         loadCertificates()
     }
     
-    func addCertificate(mpURL: URL, p12URL: URL, p12Pass: String) throws -> String {
+    func addCertificate(mpURL: URL, p12URL: URL, p12Pass: String) throws {
         let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
         
         let mpAccessing = mpURL.startAccessingSecurityScopedResource()
@@ -39,7 +60,8 @@ class CertificateManager: ObservableObject {
         
         let certsDirectory = documentsDirectory.appendingPathComponent("certificates/")
         let teamName = parseTeamName(from: mpURL)
-        let certPath = certsDirectory.appendingPathComponent("\(teamName)/")
+        let certUUID = UUID().uuidString
+        let certPath = certsDirectory.appendingPathComponent("\(certUUID)/")
         
         if !fileManager.fileExists(atPath: certPath.path()) {
             do {
@@ -74,23 +96,28 @@ class CertificateManager: ObservableObject {
             throw "Failed to copy certificate files!"
         }
         
-        certificates.append(Certificate(name: teamName, path: certPath.path()))
+        certificates.append(Certificate(name: teamName, url: certPath))
         saveCertificates()
         loadCertificates()
         
-        return "Successfully added certificate \(teamName)!"
-    }
-    
-    func loadCertificates() {
-        if let savedCertificates = UserDefaults.standard.data(forKey: userDefaultsKey),
-           let decodedCertificates = try? JSONDecoder().decode([Certificate].self, from: savedCertificates) {
-            certificates = decodedCertificates
-        }
+        return
     }
     
     func saveCertificates() {
-        if let encodedCertificates = try? JSONEncoder().encode(certificates) {
-            UserDefaults.standard.set(encodedCertificates, forKey: userDefaultsKey)
+        if let encoded = try? JSONEncoder().encode(certificates) {
+            UserDefaults.standard.set(encoded, forKey: userDefaultsKey)
+        }
+    }
+    
+    func loadCertificates() {
+        if let data = UserDefaults.standard.data(forKey: userDefaultsKey) {
+            if let decoded = try? JSONDecoder().decode([Certificate].self, from: data) {
+                self.certificates = decoded
+            }
+        }
+        
+        if let savedID = UserDefaults.standard.string(forKey: "activeCertificateID") {
+            activeCertificate = certificates.first { $0.id.uuidString == savedID }
         }
     }
     
@@ -99,7 +126,7 @@ class CertificateManager: ObservableObject {
             if i < certificates.count {
                 let certToDelete = certificates[i]
                 do {
-                    try FileManager.default.removeItem(atPath: certToDelete.path)
+                    try FileManager.default.removeItem(at: certToDelete.url)
                     certificates.remove(at: i)
                 } catch {
                     print("[!] Unable to delete certificate archive: \(error)")
@@ -108,86 +135,56 @@ class CertificateManager: ObservableObject {
         }
         saveCertificates()
     }
-
-    func parseExpirationDate(url: URL) -> String {
-        do {
-            let mpData = try Data(contentsOf: url)
-            let mpContent = String(data: mpData, encoding: .ascii) ?? ""
-            
-            let pattern = "<key>ExpirationDate</key>\\s*<date>(.*?)</date>"
-            let regex = try NSRegularExpression(pattern: pattern, options: [])
-            let nsRange = NSRange(mpContent.startIndex..<mpContent.endIndex, in: mpContent)
-            
-            guard let match = regex.firstMatch(in: mpContent, options: [], range: nsRange),
-                  let range = Range(match.range(at: 1), in: mpContent) else {
-                return "<unknown>"
-            }
-            
-            let dateString = String(mpContent[range])
-            let isoFormatter = ISO8601DateFormatter()
-            
-            guard let date = isoFormatter.date(from: dateString) else {
-                return "<unknown>"
-            }
-            
-            let readableFormatter = DateFormatter()
-            readableFormatter.dateFormat = "MMMM d, yyyy"
-            
-            return readableFormatter.string(from: date)
-        } catch {
-            return "<unknown>"
+    
+    // MobileProvision parsing stuff (skidded from whatever this is: https://github.com/junkpiano/MobileProvision)
+    
+    public struct MobileProvisionPlist: Decodable {
+        public let appIDName: String
+        public let expirationDate: Date
+        public let teamName: String
+        public let teamIdentifier: [String]
+        public let provisionedDevices: [String]?
+        public let name: String
+        
+        enum CodingKeys: String, CodingKey {
+            case appIDName = "AppIDName"
+            case expirationDate = "ExpirationDate"
+            case teamName = "TeamName"
+            case provisionedDevices = "ProvisionedDevices"
+            case name = "Name"
+            case teamIdentifier = "TeamIdentifier"
         }
     }
-
-    func parseExpirationDate(from cert: Certificate) -> String {
+    
+    func parseMobileProvision(at url: URL) -> MobileProvisionPlist {
         do {
-            let mpPath = URL(fileURLWithPath: cert.path).appendingPathComponent("mp.mobileprovision")
-            let mpData = try Data(contentsOf: mpPath)
-            let mpContent = String(data: mpData, encoding: .ascii) ?? ""
+            let mpData = try Data(contentsOf: url)
+            let fileContents = String(data: mpData, encoding: .ascii)!
+            let startIndex = fileContents.scanUpTo("<plist")!
+            let endIndex = fileContents.scanUpTo("</plist>")!
             
-            let pattern = "<key>ExpirationDate</key>\\s*<date>(.*?)</date>"
-            let regex = try NSRegularExpression(pattern: pattern, options: [])
-            let nsRange = NSRange(mpContent.startIndex..<mpContent.endIndex, in: mpContent)
+            let from = fileContents.index(startIndex, offsetBy: 0)
+            let to = fileContents.index(endIndex, offsetBy: "</plist>".count)
             
-            guard let match = regex.firstMatch(in: mpContent, options: [], range: nsRange),
-                  let range = Range(match.range(at: 1), in: mpContent) else {
-                return "<unknown>"
-            }
-            
-            let dateString = String(mpContent[range])
-            let isoFormatter = ISO8601DateFormatter()
-            
-            guard let date = isoFormatter.date(from: dateString) else {
-                return "<unknown>"
-            }
-            
-            let readableFormatter = DateFormatter()
-            readableFormatter.dateFormat = "MMMM d, yyyy"
-            
-            return readableFormatter.string(from: date)
+            return try PropertyListDecoder().decode(MobileProvisionPlist.self, from: String(fileContents[from..<to]).data(using: .ascii)!)
         } catch {
-            return "<unknown>"
+            return MobileProvisionPlist(appIDName: "appID", expirationDate: try! Date("2001-09-11T01:46:40-07:00", strategy: .iso8601), teamName: "Vibrating Balls Hotel & Resort", teamIdentifier: ["unknown"], provisionedDevices: [], name: "Vibrating Balls Hotel & Resort")
         }
+    }
+    
+    func parseExpirationDate(url: URL) -> String {
+        let mobileProvision = parseMobileProvision(at: url)
+        let isoFormatter = ISO8601DateFormatter()
+        
+        let readableFormatter = DateFormatter()
+        readableFormatter.dateFormat = "MMMM d, yyyy"
+        
+        return readableFormatter.string(from: mobileProvision.expirationDate)
     }
         
     func parseTeamName(from url: URL) -> String {
-        do {
-            let mpData = try Data(contentsOf: url)
-            let mpContent = String(data: mpData, encoding: .ascii) ?? ""
-            
-            let pattern = "<key>TeamName</key>\\s*<string>(.*?)</string>"
-            let regex = try NSRegularExpression(pattern: pattern, options: [])
-            let nsRange = NSRange(mpContent.startIndex..<mpContent.endIndex, in: mpContent)
-            
-            guard let match = regex.firstMatch(in: mpContent, options: [], range: nsRange),
-                  let range = Range(match.range(at: 1), in: mpContent) else {
-                return "Vibrating Balls Hotel & Resort"
-            }
-            
-            return String(mpContent[range])
-        } catch {
-            return "Vibrating Balls Hotel & Resort"
-        }
+        let mobileProvision = try parseMobileProvision(at: url)
+        return mobileProvision.name
     }
         
     func formattedDate(_ date: Date) -> String {

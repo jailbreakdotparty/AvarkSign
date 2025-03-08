@@ -2,7 +2,7 @@
 // CloseButton.swift – Picasso
 // created on 2023-12-14
 
-//  Skidded from the OpenPicasso TabView, licensed under the MIT License.
+// Skidded from OpenPicasso, licensed under the MIT License.
 
 import SwiftUI
 

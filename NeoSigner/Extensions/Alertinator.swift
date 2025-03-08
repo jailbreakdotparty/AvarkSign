@@ -24,6 +24,19 @@ public class Alertinator {
         }
     }
     
+    func alert(title: String, body: String, showCancel: Bool = true, action: @escaping () -> Void) {
+        Task { @MainActor in
+            alertController = UIAlertController(title: title, message: body, preferredStyle: .alert)
+            if showCancel {
+                alertController?.addAction(.init(title: "OK", style: .default) { _ in
+                    action()
+                })
+            }
+            alertController?.view.tintColor = UIColor(named: "AccentColor")
+            self.present(alertController!)
+        }
+    }
+    
     func prompt(title: String, placeholder: String, showCancel: Bool = true, completion: @escaping (String?) async -> Void) {
         Task { @MainActor in
             alertController = UIAlertController(title: title, message: nil, preferredStyle: .alert)
