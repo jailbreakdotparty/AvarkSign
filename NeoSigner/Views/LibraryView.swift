@@ -96,6 +96,8 @@ struct InlineAppCard: View {
     @StateObject private var certManager = CertificateManager()
     @AppStorage("installMethod") private var installMethod: Int = 0
     var app: LibraryApp
+    @Environment(\.openURL) var openURL
+    @State private var isLoading = false
     
     var body: some View {
         HStack {
@@ -119,7 +121,27 @@ struct InlineAppCard: View {
             
             Menu(content: {
                 Button(action: {
-                    _ = Sideloading.shared.sideload(app: app, cert: certManager.activeCertificate!, installMethod: installMethod)
+                    isLoading = true
+                    
+                    Task {
+                        if let cert = certManager.activeCertificate {
+                            let result = await Sideloading.shared.sideload(app: app, cert: cert, installMethod: installMethod)
+
+                            await MainActor.run {
+                                isLoading = false
+                                if result.success, let url = result.installURL {
+                                    openURL(url)
+                                } else {
+                                    Alertinator.shared.alert(title: "Error!", body: "Something went wrong. And I'm not sure what it was. 💀")
+                                }
+                            }
+                        } else {
+                            await MainActor.run {
+                                isLoading = false
+                                Alertinator.shared.alert(title: "No certificates!", body: "Please import a certificate in the Settings tab.")
+                            }
+                        }
+                    }
                 }) {
                     Label("Install", systemImage: "arrow.down")
                 }
@@ -131,8 +153,13 @@ struct InlineAppCard: View {
                 }
                 .disabled(true)
             }, label: {
-                Image(systemName: "arrow.down.app")
-                    .imageScale(.large)
+                if isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                } else {
+                    Image(systemName: "arrow.down.app")
+                        .imageScale(.large)
+                }
             })
         }
     }
