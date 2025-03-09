@@ -258,13 +258,17 @@ func dropDatConfetti() {
         .ignoresSafeArea()
     ).view!
     
+    let shouldWeActuallyDropTheConfetti = UserDefaults.standard.bool(forKey: "confettiModeActivated")
+    
     confettiView.frame = window.bounds
     confettiView.isUserInteractionEnabled = false
     confettiView.backgroundColor = .clear
     
-    window.addSubview(confettiView)
-    
-    DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
-        confettiView.removeFromSuperview()
+    if shouldWeActuallyDropTheConfetti {
+        window.addSubview(confettiView)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
+            confettiView.removeFromSuperview()
+        }
     }
 }

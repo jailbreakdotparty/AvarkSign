@@ -10,10 +10,12 @@ import SwiftUI
 struct SettingsView: View {
     @AppStorage("installMethod") private var installMethod: Int = 0 // 0 = Remote, 1 = Local
     @AppStorage("hasLocalInstallCert") private var hasLocalInstallCert: Bool = false
+    @AppStorage("confettiModeActivated") private var confettiModeActivated: Bool = false
     
     @State private var showCoolLoadingSheet: Bool = false
     @State private var showCertImportSheet: Bool = false
     @StateObject private var certManager = CertificateManager()
+    @State private var nonSuspiciousIntName: Int = 0
     
     var body: some View {
         NavigationStack {
@@ -163,7 +165,17 @@ struct SettingsView: View {
                         Text("[View the GitHub!](https://github.com/NeoSigniOS/NeoSigner)")
                     })
                     
-                    Section(footer: Text("NeoSigner Public Alpha v0.0.8\n[\"It actually signs!\"](https://www.idownloadblog.com/2024/12/29/mysign/)"), content: {})
+                    Section(footer: Text("NeoSigner v0.0.8 (\(weOnADebugBuild ? "Debug" : "Release"))\n[\"It actually signs!\"](https://www.idownloadblog.com/2024/12/29/mysign/)").onTapGesture(perform: {
+                        nonSuspiciousIntName += 1
+                        
+                        if nonSuspiciousIntName == 8 {
+                            if confettiModeActivated {
+                                Alertinator.shared.alert(title: "Nice try.", body: "Did you really think doing that again would somehow disable Confetti Mode? You'll have to try harder than that.")
+                            }
+                            confettiModeActivated = true
+                            Alertinator.shared.alert(title: "🎉", body: "Confetti Mode activated! You'll find out what it does in due time. No, you can't turn it off. You did this to yourself.")
+                        }
+                    }), content: {})
                 }
             }
             .navigationTitle("Settings")

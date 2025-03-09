@@ -78,6 +78,7 @@ struct LibraryView: View {
                     selectedIPAURL = file.absoluteURL
                     do {
                         try libraryManager.importApp(ipaURL: selectedIPAURL!)
+                        dropDatConfetti()
                     } catch {
                         print(error.localizedDescription)
                         Alertinator.shared.alert(title: "Error adding app!", body: "Failed to add app to library: \(error.localizedDescription)")
@@ -131,6 +132,7 @@ struct InlineAppCard: View {
                                 isLoading = false
                                 if result.success, let url = result.installURL {
                                     openURL(url)
+                                    dropDatConfetti()
                                 } else {
                                     Alertinator.shared.alert(title: "Error!", body: "Something went wrong. And I'm not sure what it was. 💀")
                                 }

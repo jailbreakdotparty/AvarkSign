@@ -222,6 +222,7 @@ struct ImportCertificateView: View {
                                 Haptic.shared.play(.light)
                                 _ = try certManager.addCertificate(mpURL: selectedMobileProvisionURL!, p12URL: selectedP12URL!, p12Pass: p12PasswordInput)
                                 certManager.activeCertificate = certManager.certificates.last!
+                                dropDatConfetti()
                                 dismiss()
                             } catch {
                                 Alertinator.shared.alert(title: "Error adding certificate!", body: "An error occurred while adding the certificate: \(error.localizedDescription)")

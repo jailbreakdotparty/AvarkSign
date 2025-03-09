@@ -77,6 +77,7 @@ struct BrowseView: View {
                                     if let url = URL(string: urlString!) {
                                         do {
                                             try await repoManager.addRepo(url: url)
+                                            dropDatConfetti()
                                         } catch {
                                             print(error)
                                             Alertinator.shared.alert(title: "Error adding repo!", body: "Failed to add the repo. \(error)")
