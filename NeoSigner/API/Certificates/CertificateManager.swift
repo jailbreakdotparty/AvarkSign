@@ -17,11 +17,7 @@ struct Certificate: Codable, Identifiable, Hashable {
 
 extension String {
     func scanUpTo(_ string: String) -> String.Index? {
-        guard let index = self.range(of: string)?.lowerBound else {
-            return nil
-        }
-        
-        return index
+        return self.range(of: string)?.lowerBound
     }
 }
 
@@ -136,55 +132,48 @@ class CertificateManager: ObservableObject {
         saveCertificates()
     }
     
-    // MobileProvision parsing stuff (skidded from whatever this is: https://github.com/junkpiano/MobileProvision)
-    
-    public struct MobileProvisionPlist: Decodable {
-        public let appIDName: String
-        public let expirationDate: Date
-        public let teamName: String
-        public let teamIdentifier: [String]
-        public let provisionedDevices: [String]?
-        public let name: String
-        
-        enum CodingKeys: String, CodingKey {
-            case appIDName = "AppIDName"
-            case expirationDate = "ExpirationDate"
-            case teamName = "TeamName"
-            case provisionedDevices = "ProvisionedDevices"
-            case name = "Name"
-            case teamIdentifier = "TeamIdentifier"
-        }
-    }
-    
-    func parseMobileProvision(at url: URL) -> MobileProvisionPlist {
-        do {
-            let mpData = try Data(contentsOf: url)
-            let fileContents = String(data: mpData, encoding: .ascii)!
-            let startIndex = fileContents.scanUpTo("<plist")!
-            let endIndex = fileContents.scanUpTo("</plist>")!
-            
-            let from = fileContents.index(startIndex, offsetBy: 0)
-            let to = fileContents.index(endIndex, offsetBy: "</plist>".count)
-            
-            return try PropertyListDecoder().decode(MobileProvisionPlist.self, from: String(fileContents[from..<to]).data(using: .ascii)!)
-        } catch {
-            return MobileProvisionPlist(appIDName: "appID", expirationDate: try! Date("2001-09-11T01:46:40-07:00", strategy: .iso8601), teamName: "Vibrating Balls Hotel & Resort", teamIdentifier: ["unknown"], provisionedDevices: [], name: "Vibrating Balls Hotel & Resort")
-        }
-    }
+    // MobileProvision parsing stuff
     
     func parseExpirationDate(url: URL) -> String {
-        let mobileProvision = parseMobileProvision(at: url)
-        let isoFormatter = ISO8601DateFormatter()
+        let accessing = url.startAccessingSecurityScopedResource()
+        defer {
+            if accessing {
+                url.stopAccessingSecurityScopedResource()
+            }
+        }
+        
+        let formatter = ISO8601DateFormatter()
+        let fallbackDate = formatter.date(from: "2001-09-11T01:46:40-07:00")!
+        
+        let profile = MobileProvision.read(from: url.path)
         
         let readableFormatter = DateFormatter()
         readableFormatter.dateFormat = "MMMM d, yyyy"
-        
-        return readableFormatter.string(from: mobileProvision.expirationDate)
+        return readableFormatter.string(from: profile?.expirationDate ?? fallbackDate)
     }
         
     func parseTeamName(from url: URL) -> String {
-        let mobileProvision = try parseMobileProvision(at: url)
-        return mobileProvision.name
+        let accessing = url.startAccessingSecurityScopedResource()
+        defer {
+            if accessing {
+                url.stopAccessingSecurityScopedResource()
+            }
+        }
+        let profile = MobileProvision.read(from: url.path)
+        
+        return profile?.name ?? profile?.teamName ?? "Vibrating Balls Hotel & Resort"
+    }
+    
+    func parseTeamID(from url: URL) -> String {
+        let accessing = url.startAccessingSecurityScopedResource()
+        defer {
+            if accessing {
+                url.stopAccessingSecurityScopedResource()
+            }
+        }
+        let profile = MobileProvision.read(from: url.path)
+        
+        return profile?.teamIdentifier.first ?? "i forgor 💀"
     }
         
     func formattedDate(_ date: Date) -> String {

@@ -45,8 +45,6 @@ struct CertificatePreviewCard: View {
     var allowSelection: Bool
     
     var body: some View {
-        let mobileProvision = certManager.parseMobileProvision(at: mobileProvisionURL!)
-        
         HStack(spacing: 16) {
             Image(systemName: "signature")
                 .resizable()
@@ -54,7 +52,7 @@ struct CertificatePreviewCard: View {
                 .frame(width: 54, height: 54)
             
             VStack(alignment: .leading) {
-                Text(mobileProvision.name)
+                Text(certManager.parseTeamName(from: mobileProvisionURL!))
                     .font(.headline)
                     .lineLimit(1)
                 Text("Expires on \(certManager.parseExpirationDate(url: mobileProvisionURL!))")
@@ -68,7 +66,7 @@ struct CertificatePreviewCard: View {
             HStack {
                 Text("Team ID")
                 Spacer()
-                CredentialTextView(text: mobileProvision.teamIdentifier[0])
+                CredentialTextView(text: certManager.parseTeamID(from: mobileProvisionURL!))
             }
         }
     }
