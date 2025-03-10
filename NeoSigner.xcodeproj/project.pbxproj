@@ -19,11 +19,11 @@
 		4316606C2D6D7E070085FB20 /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431660512D6D7E070085FB20 /* json.cpp */; };
 		431661212D6D82320085FB20 /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4316606F2D6D7E210085FB20 /* openssl.xcframework */; };
 		431661222D6D82320085FB20 /* openssl.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4316606F2D6D7E210085FB20 /* openssl.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		4349AA522D78092F00CB4576 /* AssetCatalogWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = 4349AA512D78092F00CB4576 /* AssetCatalogWrapper */; };
 		43A253FD2D6E725800DEE1C7 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 43A253FC2D6E725800DEE1C7 /* ZIPFoundation */; };
 		43A254002D6E72CE00DEE1C7 /* WelcomeSheet in Frameworks */ = {isa = PBXBuildFile; productRef = 43A253FF2D6E72CE00DEE1C7 /* WelcomeSheet */; };
 		43A254032D6E72DB00DEE1C7 /* Swifter in Frameworks */ = {isa = PBXBuildFile; productRef = 43A254022D6E72DB00DEE1C7 /* Swifter */; };
 		43A254552D6E737400DEE1C7 /* Vapor in Frameworks */ = {isa = PBXBuildFile; productRef = 43A254542D6E737400DEE1C7 /* Vapor */; };
+		43B16C212D7E72A000BAB9ED /* AssetCatalogWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = 43B16C202D7E72A000BAB9ED /* AssetCatalogWrapper */; };
 		43ECF0002D6E826C002DA79F /* Glur in Frameworks */ = {isa = PBXBuildFile; productRef = 43ECEFFF2D6E826C002DA79F /* Glur */; };
 		43ECF0812D6E84C0002DA79F /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 43ECF0802D6E84C0002DA79F /* NukeUI */; };
 /* End PBXBuildFile section */
@@ -96,12 +96,12 @@
 			files = (
 				431661212D6D82320085FB20 /* openssl.xcframework in Frameworks */,
 				43A254002D6E72CE00DEE1C7 /* WelcomeSheet in Frameworks */,
-				4349AA522D78092F00CB4576 /* AssetCatalogWrapper in Frameworks */,
 				43ECF0002D6E826C002DA79F /* Glur in Frameworks */,
 				43A253FD2D6E725800DEE1C7 /* ZIPFoundation in Frameworks */,
 				43A254552D6E737400DEE1C7 /* Vapor in Frameworks */,
 				43A254032D6E72DB00DEE1C7 /* Swifter in Frameworks */,
 				43ECF0812D6E84C0002DA79F /* NukeUI in Frameworks */,
+				43B16C212D7E72A000BAB9ED /* AssetCatalogWrapper in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -198,6 +198,7 @@
 				43ECEFFF2D6E826C002DA79F /* Glur */,
 				43ECF0802D6E84C0002DA79F /* NukeUI */,
 				4349AA512D78092F00CB4576 /* AssetCatalogWrapper */,
+				43B16C202D7E72A000BAB9ED /* AssetCatalogWrapper */,
 			);
 			productName = NeoSigner;
 			productReference = 43BD3D702D6D7A4300459757 /* NeoSigner.app */;
@@ -234,7 +235,7 @@
 				43A254532D6E737400DEE1C7 /* XCRemoteSwiftPackageReference "vapor" */,
 				43ECEFFE2D6E826C002DA79F /* XCRemoteSwiftPackageReference "Glur" */,
 				43ECF07F2D6E84C0002DA79F /* XCRemoteSwiftPackageReference "Nuke" */,
-				4349AA502D78092F00CB4576 /* XCLocalSwiftPackageReference "../PrivateKits" */,
+				43B16C1F2D7E72A000BAB9ED /* XCRemoteSwiftPackageReference "PrivateKits" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 43BD3D712D6D7A4300459757 /* Products */;
@@ -487,13 +488,6 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		4349AA502D78092F00CB4576 /* XCLocalSwiftPackageReference "../PrivateKits" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../PrivateKits;
-		};
-/* End XCLocalSwiftPackageReference section */
-
 /* Begin XCRemoteSwiftPackageReference section */
 		43A253FB2D6E725800DEE1C7 /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -525,6 +519,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 4.113.2;
+			};
+		};
+		43B16C1F2D7E72A000BAB9ED /* XCRemoteSwiftPackageReference "PrivateKits" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/skadz108/PrivateKits";
+			requirement = {
+				branch = main;
+				kind = branch;
 			};
 		};
 		43ECEFFE2D6E826C002DA79F /* XCRemoteSwiftPackageReference "Glur" */ = {
@@ -569,6 +571,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 43A254532D6E737400DEE1C7 /* XCRemoteSwiftPackageReference "vapor" */;
 			productName = Vapor;
+		};
+		43B16C202D7E72A000BAB9ED /* AssetCatalogWrapper */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 43B16C1F2D7E72A000BAB9ED /* XCRemoteSwiftPackageReference "PrivateKits" */;
+			productName = AssetCatalogWrapper;
 		};
 		43ECEFFF2D6E826C002DA79F /* Glur */ = {
 			isa = XCSwiftPackageProductDependency;

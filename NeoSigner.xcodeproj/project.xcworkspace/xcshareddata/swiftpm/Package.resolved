@@ -1,5 +1,5 @@
 {
-  "originHash" : "3b866536a4c13324fc0392168c801bdf00a4d0b7526f956f615a5a4d10e01141",
+  "originHash" : "f126dba21dd43c473073fb17369ee57da5bd2a0278b85f704b97f4aee7b8f7c2",
   "pins" : [
     {
       "identity" : "async-http-client",
@@ -53,6 +53,15 @@
       "state" : {
         "revision" : "0ead44350d2737db384908569c012fe67c421e4d",
         "version" : "12.8.0"
+      }
+    },
+    {
+      "identity" : "privatekits",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/skadz108/PrivateKits",
+      "state" : {
+        "branch" : "main",
+        "revision" : "4b201e4dd7cda31e5fcd6cab07eca38b9865a32c"
       }
     },
     {
