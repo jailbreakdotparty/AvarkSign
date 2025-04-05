@@ -174,7 +174,7 @@ public class Sideloading: ObservableObject {
                     server["/install.plist"] = shareFile(plistPath)
                     
                     print("[*] Installing...")
-                    installURL = URL(string: "itms-services://?action=download-manifest&url=https://jailbreak.party/install")!
+                    installURL = URL(string: "itms-services://?action=download-manifest&url=https://spyware.party/install")!
                     hasDoneRemoteInstallSoWeCanCloseTheFuckingServer = true
                 } else {
                     print("what the sigma")
