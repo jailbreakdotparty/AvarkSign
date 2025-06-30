@@ -7,136 +7,126 @@
 
 import SwiftUI
 
-struct CoolLoadingView: View {
-    @State var progress: Double = 0.0
-    @State var appName: String = "CatalogHelper (v2)"
-    @Environment(\.dismiss) var dismiss
-    
-    @State private var title: String = "Signing"
-    @State private var status: String = "Extracting IPA..."
-    @State private var showText: Bool = true
-    
-    var body: some View {
-        NavigationStack {
-            VStack {
-                ZStack {
-                    LinearGradient(gradient: Gradient(colors: [
-                        .accentColor.opacity(0.25),
-                        .accentColor.opacity(0.05)
-                    ]), startPoint: .top, endPoint: .bottom)
-                    .ignoresSafeArea(.all)
-                    
-                    ZStack {
-                        Text("\(Int(progress * 100))%")
-                            .contentTransition(.numericText())
-                            .font(.system(size: 85, design: .rounded))
-                        Circle()
-                            .fill(RadialGradient(gradient: Gradient(colors: [.accentColor.opacity(0.6), Color.clear]), center: .center, startRadius: 50, endRadius: 200))
-                            .blur(radius: 50)
-                            .frame(width: 150, height: 150)
-                            .blendMode(.screen)
-                        Circle()
-                            .stroke(Color.accentColor, lineWidth: 18)
-                            .opacity(0.5)
-                            .frame(width: 300)
-                        Circle()
-                            .trim(from: 0, to: progress)
-                            .stroke(Color.accentColor, style: StrokeStyle(lineWidth: 18, lineCap: .round))
-                            .frame(width: 300)
-                            .rotationEffect(.degrees(-90))
-                            .animation(.smooth, value: progress)
-                    }
-                    
-                    VStack {
-                        if showText {
-                            Text(title)
-                                .font(.system(size: 28, weight: .semibold, design: .rounded))
-                            Text(status)
-                                .font(.system(size: 16, weight: .regular, design: .rounded))
-                        }
-                    }
-                    .multilineTextAlignment(.center)
-                    .frame(maxHeight: .infinity, alignment: .bottom)
-                    .padding(.bottom, 120)
-                    .onAppear {
-                        cycleSteps()
-                    }
-                }
-                .ignoresSafeArea(.all, edges: .top)
-                .buttonStyle(.plain)
-                .navigationTitle("Installing \(appName)...")
-                .navigationBarTitleDisplayMode(.inline)
+//struct CoolLoadingView: View {
+//    @ObservedObject var downloadManager: DownloadManager
+//    @State private var showText: Bool = true
+//    @State private var isSpinning: Bool = false
+//    @State private var rotationDegrees: Double = 0
+//    @Environment(\.dismiss) var dismiss
+//    
+//    var appName: String
+//    var onDownloadComplete: ((URL) throws -> Void)?
+//    
+//    var body: some View {
+//        NavigationStack {
+//            VStack {
+//                ZStack {
+//                    LinearGradient(gradient: Gradient(colors: [
+//                        .accentColor.opacity(0.25),
+//                        .accentColor.opacity(0.05)
+//                    ]), startPoint: .top, endPoint: .bottom)
+//                    .ignoresSafeArea(.all)
+//                    
+//                    ZStack {
+//                        Text("\(Int(downloadManager.downloadProgress * 100))%")
+//                            .contentTransition(.numericText())
+//                            .font(.system(size: 85, design: .rounded))
+//                            .opacity(isSpinning ? 0 : 1)
+//                        
+//                        Circle()
+//                            .fill(RadialGradient(gradient: Gradient(colors: [.accentColor.opacity(0.6), Color.clear]), center: .center, startRadius: 50, endRadius: 200))
+//                            .blur(radius: 50)
+//                            .frame(width: 150, height: 150)
+//                            .blendMode(.screen)
+//                        
+//                        if isSpinning {
+//                            Circle()
+//                                .trim(from: 0, to: 0.7)
+//                                .stroke(Color.accentColor, style: StrokeStyle(lineWidth: 18, lineCap: .round))
+//                                .frame(width: 300)
+//                                .rotationEffect(.degrees(rotationDegrees))
+//                                .onAppear {
+//                                    withAnimation(Animation.linear(duration: 1).repeatForever(autoreverses: false)) {
+//                                        rotationDegrees = 360
+//                                    }
+//                                }
+//                        } else {
+//                            Circle()
+//                                .stroke(Color.accentColor, lineWidth: 18)
+//                                .opacity(0.5)
+//                                .frame(width: 300)
+//                        }
+//                    }
+//                    
+//                    VStack {
+//                        if showText {
+//                            Text(getTitle())
+//                                .font(.system(size: 28, weight: .semibold, design: .rounded))
+//                                .animation(.easeInOut, value: downloadManager.downloadState)
+//                            
+//                            Text(getStatus())
+//                                .font(.system(size: 16, weight: .regular, design: .rounded))
+//                                .animation(.easeInOut, value: downloadManager.downloadStatusText)
+//                        }
+//                    }
+//                    .multilineTextAlignment(.center)
+//                    .frame(maxHeight: .infinity, alignment: .bottom)
+//                    .padding(.bottom, 120)
+//                }
+//                .ignoresSafeArea(.all, edges: .top)
+//                .buttonStyle(.plain)
+//                .navigationTitle("\(getTitle()) \(appName)...")
+//                .navigationBarTitleDisplayMode(.inline)
 //                .toolbar {
 //                    ToolbarItem(placement: .navigationBarTrailing, content: {
 //                        Button(action: {
+//                            if case .downloading = downloadManager.downloadState {
+//                                downloadManager.cancelAllDownloads()
+//                            }
 //                            dismiss()
 //                        }, label: {
-//                            CloseButton()
+//                            Image(systemName: "xmark.circle.fill")
+//                                .foregroundColor(.gray)
+//                                .imageScale(.large)
 //                        })
 //                    })
 //                }
-                .background(Color.black)
-            }
-        }
-    }
-    
-    func cycleSteps() {
-        let steps: [(title: String, status: String)] = [
-            ("Success!", "Successfully installed \(appName)!"),
-            ("Downloading", "Downloading \(appName)..."),
-            ("Extracting", "Extracting IPA..."),
-            ("Signing", "Calling zsign..."),
-            ("Packaging", "Compressing IPA..."),
-            ("Preparing", "Starting Vapor server..."),
-            ("Installing", "Opening install manifest...")
-        ]
-
-        var index = 0
-
-        func nextStep() {
-            let duration = Double.random(in: 1.6...4.2)
-            let startProgress = progress
-            let targetProgress = Double(index + 1) / Double(steps.count)
-
-            withAnimation(.easeInOut(duration: 0.65)) {
-                showText = false
-            }
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                index = (index + 1) % steps.count
-                title = steps[index].title
-                status = steps[index].status
-                
-                showText = true
-                
-                Task {
-                    let startTime = Date.now
-                    while Date.now.timeIntervalSince(startTime) < duration {
-                        let elapsedTime = Date.now.timeIntervalSince(startTime)
-                        let progressFraction = elapsedTime / duration
-                        await MainActor.run {
-                            progress = startProgress + (targetProgress - startProgress) * progressFraction
-                        }
-                        try? await Task.sleep(nanoseconds: 16_000_000)
-                    }
-                }
-                
-                progress = targetProgress
-                if index == 0 {
-                    progress = 0
-                }
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
-                    nextStep()
-                }
-            }
-        }
-
-        nextStep()
-    }
-
-}
-
-#Preview {
-    CoolLoadingView()
-}
+//                .background(Color.black)
+//            }
+//            .onChange(of: downloadManager.downloadState) { newState in
+//                if case .finished = newState {
+//                    withAnimation {
+//                        isSpinning = true
+//                    }
+//                }
+//            }
+//        }
+//    }
+//    
+//    private func getTitle() -> String {
+//        switch downloadManager.downloadState {
+//        case .notStarted:
+//            return "Preparing"
+//        case .downloading:
+//            return "Downloading"
+//        case .finished:
+//            return isSpinning ? "Installing" : "Processing"
+//        case .failed:
+//            return "Failed"
+//        }
+//    }
+//    
+//    private func getStatus() -> String {
+//        switch downloadManager.downloadState {
+//        case .notStarted:
+//            return "Preparing to download \(appName)..."
+//        case .downloading:
+//            return downloadManager.downloadStatusText.isEmpty ?
+//            "Downloading \(appName)..." : downloadManager.downloadStatusText
+//        case .finished:
+//            return isSpinning ? "Installing \(appName)..." : "Processing \(appName)..."
+//        case .failed(let error):
+//            return "Error: \(error.localizedDescription)"
+//        }
+//    }
+//}

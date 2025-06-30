@@ -1,5 +1,5 @@
 {
-  "originHash" : "f126dba21dd43c473073fb17369ee57da5bd2a0278b85f704b97f4aee7b8f7c2",
+  "originHash" : "45b65e2f406a729149330a5930340fbcd8606506ce2d813773743cfbebbfb2ac",
   "pins" : [
     {
       "identity" : "async-http-client",
@@ -61,7 +61,7 @@
       "location" : "https://github.com/skadz108/PrivateKits",
       "state" : {
         "branch" : "main",
-        "revision" : "4b201e4dd7cda31e5fcd6cab07eca38b9865a32c"
+        "revision" : "26816e5250386664244ac0bc3727ecadfa3ceefb"
       }
     },
     {

@@ -12,7 +12,6 @@ struct SettingsView: View {
     @AppStorage("hasLocalInstallCert") private var hasLocalInstallCert: Bool = false
     @AppStorage("confettiModeActivated") private var confettiModeActivated: Bool = false
     
-    @State private var showCoolLoadingSheet: Bool = false
     @State private var showCertImportSheet: Bool = false
     @StateObject private var certManager = CertificateManager()
     @State private var nonSuspiciousIntName: Int = 0
@@ -98,17 +97,6 @@ struct SettingsView: View {
                     
                     Section(header: Text("Debug"), content: {
                         Button(action: {
-                            showCoolLoadingSheet = true
-                        }) {
-                            VStack(alignment: .leading) {
-                                Text("Open cool loading view")
-                                Text("(the animations are fucked rn)")
-                                    .font(.footnote)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                        
-                        Button(action: {
                             let fileManager = FileManager.default
                             let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
                             let libraryManager = LibraryManager()
@@ -179,9 +167,6 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
-            .sheet(isPresented: $showCoolLoadingSheet, content: {
-                CoolLoadingView()
-            })
             .sheet(isPresented: $showCertImportSheet, content: {
                 ImportCertificateView(certManager: certManager)
             })

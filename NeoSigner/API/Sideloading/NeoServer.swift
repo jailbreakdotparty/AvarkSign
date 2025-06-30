@@ -174,7 +174,7 @@ class NeoServer: ObservableObject {
             app.http.server.configuration.tlsConfiguration = try setupTLSConfig()
             app.http.server.configuration.hostname = serverHostnameThingy
             app.http.server.configuration.tcpNoDelay = true
-            app.http.server.configuration.address = .hostname("0.0.0.0", port: 8080)
+            app.http.server.configuration.address = .hostname(serverHostnameThingy, port: 8080)
             app.http.server.configuration.port = 8080
             app.routes.defaultMaxBodySize = "128mb"
             app.routes.caseInsensitive = false

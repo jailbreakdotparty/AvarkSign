@@ -19,6 +19,7 @@
 		4316606C2D6D7E070085FB20 /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431660512D6D7E070085FB20 /* json.cpp */; };
 		431661212D6D82320085FB20 /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4316606F2D6D7E210085FB20 /* openssl.xcframework */; };
 		431661222D6D82320085FB20 /* openssl.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4316606F2D6D7E210085FB20 /* openssl.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		432CE8722DC5E6A8005CE384 /* AssetCatalogWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = 4349AA512D78092F00CB4576 /* AssetCatalogWrapper */; };
 		43A253FD2D6E725800DEE1C7 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 43A253FC2D6E725800DEE1C7 /* ZIPFoundation */; };
 		43A254002D6E72CE00DEE1C7 /* WelcomeSheet in Frameworks */ = {isa = PBXBuildFile; productRef = 43A253FF2D6E72CE00DEE1C7 /* WelcomeSheet */; };
 		43A254032D6E72DB00DEE1C7 /* Swifter in Frameworks */ = {isa = PBXBuildFile; productRef = 43A254022D6E72DB00DEE1C7 /* Swifter */; };
@@ -94,6 +95,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				432CE8722DC5E6A8005CE384 /* AssetCatalogWrapper in Frameworks */,
 				431661212D6D82320085FB20 /* openssl.xcframework in Frameworks */,
 				43A254002D6E72CE00DEE1C7 /* WelcomeSheet in Frameworks */,
 				43ECF0002D6E826C002DA79F /* Glur in Frameworks */,
@@ -411,6 +413,7 @@
 				INFOPLIST_FILE = NeoSigner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NeoSigner;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -422,7 +425,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.0.8;
-				PRODUCT_BUNDLE_IDENTIFIER = com.NeoSign.NeoSigner;
+				PRODUCT_BUNDLE_IDENTIFIER = online.skadz.NeoSigner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = NeoSigner/Other/bridge.h;
@@ -445,6 +448,7 @@
 				INFOPLIST_FILE = NeoSigner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NeoSigner;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -456,7 +460,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.0.8;
-				PRODUCT_BUNDLE_IDENTIFIER = com.NeoSign.NeoSigner;
+				PRODUCT_BUNDLE_IDENTIFIER = online.skadz.NeoSigner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = NeoSigner/Other/bridge.h;

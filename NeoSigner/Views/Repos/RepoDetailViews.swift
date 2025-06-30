@@ -7,6 +7,7 @@
 
 import SwiftUI
 import NukeUI
+import ZIPFoundation
 
 struct RepoDetailView: View {
     let repo: Repo
@@ -92,6 +93,14 @@ struct RepoDetailView: View {
 struct AppDetailView: View {
     let app: RepoApp
     let repoColor: Color
+    
+    @StateObject private var certManager = CertificateManager()
+    @StateObject private var libraryManager = LibraryManager()
+    
+    @AppStorage("installMethod") private var installMethod: Int = 0
+    
+    @Environment(\.openURL) var openURL
+    
     @State private var showShareSheet: Bool = false
     @State private var shareURL: String = ""
     
@@ -129,19 +138,25 @@ struct AppDetailView: View {
                 
                 HStack {
                     Button(action: {
-                        Haptic.shared.play(.rigid)
-                        var downloadURL = ""
-                        
-                        if let version = app.getLatestVersion() {
-                            downloadURL = version.downloadURL
-                        } else if let appDownloadURL = app.downloadURL, !appDownloadURL.isEmpty {
-                            downloadURL = appDownloadURL
-                        } else {
-                            Alertinator.shared.alert(title: "Error downloading app", body: "Failed to get app download URL!")
-                            return
+                        do {
+                            Haptic.shared.play(.rigid)
+                            var downloadURL = ""
+                            
+                            if let version = app.getLatestVersion() {
+                                downloadURL = version.downloadURL
+                            } else if let appDownloadURL = app.downloadURL, !appDownloadURL.isEmpty {
+                                downloadURL = appDownloadURL
+                            } else {
+                                Alertinator.shared.alert(title: "Error downloading app", body: "Failed to get app download URL!")
+                                return
+                            }
+                            
+                            Task {
+                                let tmpDirURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("tmp/")
+                                let ipaURL = try await Downloadinator(from: URL(string: downloadURL)!, to: tmpDirURL!.appendingPathComponent("downloadTmp.ipa"))
+                                try libraryManager.importApp(ipaURL: ipaURL)
+                            }
                         }
-                        
-                        Alertinator.shared.alert(title: "Debug info", body: "Download URL: \(downloadURL)\n\n\(DeviceInfo.niceVersionString)")
                     }) {
                         Text("Install")
                             .font(.system(size: 20, weight: .medium))

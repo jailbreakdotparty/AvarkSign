@@ -25,6 +25,7 @@ private var welcomeSheetPages = [
 ]
 
 var weOnADebugBuild: Bool = false
+var fileManager = FileManager.default
 
 @main
 struct NeoSignerApp: App {
