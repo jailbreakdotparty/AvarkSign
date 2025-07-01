@@ -24,13 +24,13 @@ struct SettingsView: View {
                         HStack {
                             Spacer()
                             VStack {
-                                Text("NeoSigner")
+                                Text("AvarkSign")
                                     .font(.system(size: 50, weight: .medium))
                                     .lineLimit(1)
                                 Text("Made by Skadz")
                                     .font(.system(size: 20, weight: .regular))
                                     .lineLimit(1)
-                                Text("\nSpecial thanks to:\nzhlynn    loyahdev    neoarz\nLrdsnow   lunginspector   bebebole")
+                                Text("\nSpecial thanks to:\nzhlynn    loyahdev    khcrysalis\nLrdsnow   lunginspector   bebebole")
                                     .font(.system(size: 12.5, weight: .light))
                                     .multilineTextAlignment(.center)
                             }
@@ -149,19 +149,20 @@ struct SettingsView: View {
                     })
                     
                     Section(header: Text("Socials"), content: {
-                        Text("[Join our Discord!](https://discord.gg/neosign)")
-                        Text("[View the GitHub!](https://github.com/NeoSigniOS/NeoSigner)")
+                        Text("[Join our Discord!](https://discord.gg/XPj66zZ4gT)")
+                        Text("[View the GitHub!](https://github.com/jailbreakdotparty/AvarkSign)")
                     })
                     
-                    Section(footer: Text("NeoSigner v0.0.8 (\(weOnADebugBuild ? "Debug" : "Release"))\n[\"It actually signs!\"](https://www.idownloadblog.com/2024/12/29/mysign/)").onTapGesture(perform: {
+                    Section(footer: Text("AvarkSign v0.1 (\(weOnADebugBuild ? "Debug" : "Release"))\n[\"It actually signs!\"](https://www.idownloadblog.com/2024/12/29/mysign/)").onTapGesture(perform: {
                         nonSuspiciousIntName += 1
                         
                         if nonSuspiciousIntName == 8 {
                             if confettiModeActivated {
                                 Alertinator.shared.alert(title: "Nice try.", body: "Did you really think doing that again would somehow disable Confetti Mode? You'll have to try harder than that.")
+                            } else {
+                                confettiModeActivated = true
+                                Alertinator.shared.alert(title: "🎉", body: "Confetti Mode activated! You'll find out what it does in due time. No, you can't turn it off. You did this to yourself.")
                             }
-                            confettiModeActivated = true
-                            Alertinator.shared.alert(title: "🎉", body: "Confetti Mode activated! You'll find out what it does in due time. No, you can't turn it off. You did this to yourself.")
                         }
                     }), content: {})
                 }

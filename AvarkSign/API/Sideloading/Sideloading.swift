@@ -104,7 +104,7 @@ public class Sideloading: ObservableObject {
                                         <key>kind</key>
                                         <string>software-package</string>
                                         <key>url</key>
-                                        <string>\(installMethod == 1 ? "https://neosigner.backloop.dev:8080/signed.ipa" : "http://localhost:8080/signed.ipa")</string>
+                                        <string>\(installMethod == 1 ? "https://avarksign.backloop.dev:8080/signed.ipa" : "http://localhost:8080/signed.ipa")</string>
                                     </dict>
                                     <dict>
                                         <key>kind</key>
@@ -112,7 +112,7 @@ public class Sideloading: ObservableObject {
                                         <key>needs-shine</key>
                                         <false/>
                                         <key>url</key>
-                                        <string>\(installMethod == 1 ? "https://neosigner.backloop.dev:8080/appIcon.png" : "http://localhost:8080/appIcon.png")</string>
+                                        <string>\(installMethod == 1 ? "https://avarksign.backloop.dev:8080/appIcon.png" : "http://localhost:8080/appIcon.png")</string>
                                     </dict>
                                     <dict>
                                         <key>kind</key>
@@ -120,7 +120,7 @@ public class Sideloading: ObservableObject {
                                         <key>needs-shine</key>
                                         <false/>
                                         <key>url</key>
-                                        <string>\(installMethod == 1 ? "https://neosigner.backloop.dev:8080/appIcon.png" : "http://localhost:8080/appIcon.png")</string>
+                                        <string>\(installMethod == 1 ? "https://avarksign.backloop.dev:8080/appIcon.png" : "http://localhost:8080/appIcon.png")</string>
                                     </dict>
                                 </array>
                                 <key>metadata</key>

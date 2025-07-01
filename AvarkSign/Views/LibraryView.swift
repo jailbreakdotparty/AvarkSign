@@ -19,8 +19,15 @@ struct LibraryView: View {
             VStack {
                 List {
                     if !libraryManager.apps.isEmpty {
+                        Section(header: Text("Remote").foregroundStyle(.primary).font(.title2.weight(.bold)).textCase(nil), content: {
+                            ForEach(libraryManager.apps.filter { $0.cameFromRepo }) { app in
+                                InlineAppCard(app: app)
+                            }
+                            .onDelete(perform: libraryManager.removeApp)
+                        })
+                        
                         Section(header: Text("Imported").foregroundStyle(.primary).font(.title2.weight(.bold)).textCase(nil), content: {
-                            ForEach(libraryManager.apps) { app in
+                            ForEach(libraryManager.apps.filter { !$0.cameFromRepo }) { app in
                                 InlineAppCard(app: app)
                             }
                             .onDelete(perform: libraryManager.removeApp)
@@ -59,11 +66,28 @@ struct LibraryView: View {
                         }
                         
                         Button(action: {
-                            Alertinator.shared.alert(title: "the heck??", body: "whar??")
+                            Task {
+                                Alertinator.shared.prompt(title: "Enter IPA URL", placeholder: "URL") { urlString in
+                                    if let isEmpty = urlString, !urlString!.isEmpty {
+                                        if let url = URL(string: urlString!) {
+                                            do {
+                                                let tmpDirURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("tmp/")
+                                                let ipaURL = try await Downloadinator(from: url, to: tmpDirURL!.appendingPathComponent("downloadTmp.ipa"))
+                                                try libraryManager.importApp(ipaURL: ipaURL, fromRepo: true)
+                                                dropDatConfetti()
+                                            } catch {
+                                                print(error)
+                                                Alertinator.shared.alert(title: "Error downloading IPA!", body: "Failed to import app from URL. \(error)")
+                                            }
+                                        } else {
+                                            Alertinator.shared.alert(title: "Invalid URL!", body: "Make sure the URL is typed correctly.")
+                                        }
+                                    }
+                                }
+                            }
                         }) {
                             Text("Import from URL")
                         }
-                        .disabled(true)
                     }, label: {
                         Image(systemName: "plus")
                     })
@@ -77,7 +101,7 @@ struct LibraryView: View {
                 case .success(let file):
                     selectedIPAURL = file.absoluteURL
                     do {
-                        try libraryManager.importApp(ipaURL: selectedIPAURL!)
+                        try libraryManager.importApp(ipaURL: selectedIPAURL!, fromRepo: false)
                         dropDatConfetti()
                     } catch {
                         print(error.localizedDescription)

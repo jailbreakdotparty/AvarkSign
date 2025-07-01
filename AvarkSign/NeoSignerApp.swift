@@ -9,7 +9,7 @@ import SwiftUI
 import WelcomeSheet
 
 private var welcomeSheetPages = [
-    WelcomeSheetPage(title: "Welcome to NeoSigner", rows: [
+    WelcomeSheetPage(title: "Welcome to AvarkSign", rows: [
         WelcomeSheetPageRow(imageSystemName: "magnifyingglass",
                             title: "Browse Any Repo",
                             content: "Import your own IPAs or search through any AltStore source. (ESign and other formats coming soon.)"),
@@ -20,7 +20,7 @@ private var welcomeSheetPages = [
         
         WelcomeSheetPageRow(imageSystemName: "heart.fill",
                             title: "Free and Open-Source",
-                            content: "NeoSigner is free and open-source software and collects zero user data. All source code is available on our GitHub for the community to improve and adapt.")
+                            content: "AvarkSign is free and open-source software and collects zero user data. All source code is available on our GitHub for the community to improve and adapt.")
     ])
 ]
 

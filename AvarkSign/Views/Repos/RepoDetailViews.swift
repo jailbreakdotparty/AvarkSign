@@ -154,16 +154,16 @@ struct AppDetailView: View {
                             Task {
                                 let tmpDirURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("tmp/")
                                 let ipaURL = try await Downloadinator(from: URL(string: downloadURL)!, to: tmpDirURL!.appendingPathComponent("downloadTmp.ipa"))
-                                try libraryManager.importApp(ipaURL: ipaURL)
+                                try libraryManager.importApp(ipaURL: ipaURL, fromRepo: true)
                             }
                         }
                     }) {
-                        Text("Install")
+                        Image(systemName: "plus")
                             .font(.system(size: 20, weight: .medium))
                             .padding(8)
                     }
                     .background(Color(UIColor.tertiarySystemFill))
-                    .clipShape(.capsule)
+                    .clipShape(.circle)
                 }
                 .listRowBackground(Color.clear)
                 

@@ -66,26 +66,26 @@
 		431660602D6D7E070085FB20 /* zsign.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = zsign.hpp; sourceTree = "<group>"; };
 		431660612D6D7E070085FB20 /* zsign.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = zsign.mm; sourceTree = "<group>"; };
 		4316606F2D6D7E210085FB20 /* openssl.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = openssl.xcframework; sourceTree = "<group>"; };
-		43BD3D702D6D7A4300459757 /* NeoSigner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeoSigner.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		43BD3D702D6D7A4300459757 /* AvarkSign.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AvarkSign.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		43ED9E9B2D712E82007A352D /* Exceptions for "NeoSigner" folder in "NeoSigner" target */ = {
+		43ED9E9B2D712E82007A352D /* Exceptions for "AvarkSign" folder in "AvarkSign" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = 43BD3D6F2D6D7A4300459757 /* NeoSigner */;
+			target = 43BD3D6F2D6D7A4300459757 /* AvarkSign */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		43BD3D722D6D7A4300459757 /* NeoSigner */ = {
+		43BD3D722D6D7A4300459757 /* AvarkSign */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				43ED9E9B2D712E82007A352D /* Exceptions for "NeoSigner" folder in "NeoSigner" target */,
+				43ED9E9B2D712E82007A352D /* Exceptions for "AvarkSign" folder in "AvarkSign" target */,
 			);
-			path = NeoSigner;
+			path = AvarkSign;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -158,7 +158,7 @@
 			isa = PBXGroup;
 			children = (
 				431660622D6D7E070085FB20 /* zsign */,
-				43BD3D722D6D7A4300459757 /* NeoSigner */,
+				43BD3D722D6D7A4300459757 /* AvarkSign */,
 				4316606E2D6D7E200085FB20 /* Frameworks */,
 				43BD3D712D6D7A4300459757 /* Products */,
 			);
@@ -167,7 +167,7 @@
 		43BD3D712D6D7A4300459757 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				43BD3D702D6D7A4300459757 /* NeoSigner.app */,
+				43BD3D702D6D7A4300459757 /* AvarkSign.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -175,9 +175,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		43BD3D6F2D6D7A4300459757 /* NeoSigner */ = {
+		43BD3D6F2D6D7A4300459757 /* AvarkSign */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 43BD3D7E2D6D7A4500459757 /* Build configuration list for PBXNativeTarget "NeoSigner" */;
+			buildConfigurationList = 43BD3D7E2D6D7A4500459757 /* Build configuration list for PBXNativeTarget "AvarkSign" */;
 			buildPhases = (
 				43BD3D6C2D6D7A4300459757 /* Sources */,
 				43BD3D6D2D6D7A4300459757 /* Frameworks */,
@@ -189,9 +189,9 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				43BD3D722D6D7A4300459757 /* NeoSigner */,
+				43BD3D722D6D7A4300459757 /* AvarkSign */,
 			);
-			name = NeoSigner;
+			name = AvarkSign;
 			packageProductDependencies = (
 				43A253FC2D6E725800DEE1C7 /* ZIPFoundation */,
 				43A253FF2D6E72CE00DEE1C7 /* WelcomeSheet */,
@@ -203,7 +203,7 @@
 				43B16C202D7E72A000BAB9ED /* AssetCatalogWrapper */,
 			);
 			productName = NeoSigner;
-			productReference = 43BD3D702D6D7A4300459757 /* NeoSigner.app */;
+			productReference = 43BD3D702D6D7A4300459757 /* AvarkSign.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -221,7 +221,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 43BD3D6B2D6D7A4300459757 /* Build configuration list for PBXProject "NeoSigner" */;
+			buildConfigurationList = 43BD3D6B2D6D7A4300459757 /* Build configuration list for PBXProject "AvarkSign" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -244,7 +244,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				43BD3D6F2D6D7A4300459757 /* NeoSigner */,
+				43BD3D6F2D6D7A4300459757 /* AvarkSign */,
 			);
 		};
 /* End PBXProject section */
@@ -410,25 +410,25 @@
 				DEVELOPMENT_TEAM = TA2N4LNLT8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = NeoSigner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = NeoSigner;
+				INFOPLIST_FILE = AvarkSign/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AvarkSign;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.0.8;
-				PRODUCT_BUNDLE_IDENTIFIER = online.skadz.NeoSigner;
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jbdotparty.AvarkSign;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = NeoSigner/Other/bridge.h;
+				SWIFT_OBJC_BRIDGING_HEADER = AvarkSign/Other/bridge.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -445,25 +445,25 @@
 				DEVELOPMENT_TEAM = TA2N4LNLT8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = NeoSigner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = NeoSigner;
+				INFOPLIST_FILE = AvarkSign/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AvarkSign;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.0.8;
-				PRODUCT_BUNDLE_IDENTIFIER = online.skadz.NeoSigner;
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jbdotparty.AvarkSign;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = NeoSigner/Other/bridge.h;
+				SWIFT_OBJC_BRIDGING_HEADER = AvarkSign/Other/bridge.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -472,7 +472,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		43BD3D6B2D6D7A4300459757 /* Build configuration list for PBXProject "NeoSigner" */ = {
+		43BD3D6B2D6D7A4300459757 /* Build configuration list for PBXProject "AvarkSign" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				43BD3D7C2D6D7A4500459757 /* Debug */,
@@ -481,7 +481,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		43BD3D7E2D6D7A4500459757 /* Build configuration list for PBXNativeTarget "NeoSigner" */ = {
+		43BD3D7E2D6D7A4500459757 /* Build configuration list for PBXNativeTarget "AvarkSign" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				43BD3D7F2D6D7A4500459757 /* Debug */,

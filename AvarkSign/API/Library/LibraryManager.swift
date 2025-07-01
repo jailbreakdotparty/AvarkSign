@@ -27,7 +27,7 @@ class LibraryManager: ObservableObject {
         loadApps()
     }
     
-    func importApp(ipaURL: URL) throws {
+    func importApp(ipaURL: URL, fromRepo: Bool) throws {
         let fileManager = FileManager.default
         let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
         let appsDirectory = documentsDirectory.appendingPathComponent("apps/")
@@ -94,7 +94,7 @@ class LibraryManager: ObservableObject {
         let bundleID = Sideloading().extractFieldFromPlist(at: infoPlistURL, field: "CFBundleIdentifier")
         let iconURL = Sideloading().extractAppIcon(appFolderURL: appFolderURL)
         
-        apps.append(LibraryApp(name: appName, bundleIdentifier: bundleID, bundleVersion: bundleVersion, iconURL: iconURL, bundleURL: appFolderURL, cameFromRepo: false))
+        apps.append(LibraryApp(name: appName, bundleIdentifier: bundleID, bundleVersion: bundleVersion, iconURL: iconURL, bundleURL: appFolderURL, cameFromRepo: fromRepo))
         
         saveApps()
         loadApps()
