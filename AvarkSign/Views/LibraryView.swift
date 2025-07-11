@@ -155,7 +155,7 @@ struct InlineAppCard: View {
                             await MainActor.run {
                                 isLoading = false
                                 if result.success, let url = result.installURL {
-                                    openURL(url)
+//                                    openURL(url)
                                     dropDatConfetti()
                                 } else {
                                     Alertinator.shared.alert(title: "Error!", body: "Something went wrong. And I'm not sure what it was. 💀")

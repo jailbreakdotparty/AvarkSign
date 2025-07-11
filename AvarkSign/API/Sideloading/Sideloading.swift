@@ -12,6 +12,7 @@ import Swifter
 import SwiftUI
 
 public class Sideloading: ObservableObject {
+    @Environment(\.openURL) private var openURL
     static let shared = Sideloading()
     
     struct AppCustomizationOptions: Codable, Hashable {
@@ -141,7 +142,7 @@ public class Sideloading: ObservableObject {
             """
             if let plistPath = createPlistFile(content: plistContent, destinationPath: destinationPath) {
                 print("[*] Installation manifest created at path: \(plistPath)")
-                var server: HttpServer = HttpServer()
+                let server: HttpServer = HttpServer()
                 
                 var installURL: URL? = nil
                 
@@ -157,6 +158,8 @@ public class Sideloading: ObservableObject {
                     
                     print("[*] Installing...")
                     installURL = NeoServer.shared.installURL
+                    print("[*] Manifest URL: \(installURL!.absoluteString)")
+                    await openURL(installURL!)
                 } else if installMethod == 0 {
                     if !hasStartedServer {
                         do {
@@ -175,6 +178,8 @@ public class Sideloading: ObservableObject {
                     
                     print("[*] Installing...")
                     installURL = URL(string: "itms-services://?action=download-manifest&url=https://spyware.party/install")!
+                    print("[*] Manifest URL: \(installURL!.absoluteString)")
+                    await openURL(installURL!)
                     hasDoneRemoteInstallSoWeCanCloseTheFuckingServer = true
                 } else {
                     print("what the sigma")
