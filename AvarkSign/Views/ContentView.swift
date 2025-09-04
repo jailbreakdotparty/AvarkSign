@@ -40,18 +40,22 @@ struct ContentView: View {
                 let color = Color.accentColor
                 GeometryReader { geometry in
                     let aThird = geometry.size.width / 3
-                    VStack {
-                        Spacer()
-                        Circle()
-                            .background(color.blur(radius: 20))
-                            .frame(width: aThird, height: 30)
-                            .shadow(color: color, radius: 40)
-                            .offset(
-                                x: CGFloat(selectedTab.rawValue) * aThird,
-                                y: 30
-                            )
+                    if niceOSVersion() < 26.0 {
+                        VStack {
+                            Spacer()
+                            Circle()
+                                .background(color.blur(radius: 20))
+                                .frame(width: aThird, height: 30)
+                                .shadow(color: color, radius: 40)
+                                .offset(
+                                    x: CGFloat(selectedTab.rawValue) * aThird,
+                                    y: 30
+                                )
+                        }
+                        .animation(.spring(response: 0.45, dampingFraction: 0.6), value: selectedTab)
+                    } else {
+                        
                     }
-                    .animation(.spring(response: 0.45, dampingFraction: 0.6), value: selectedTab)
                 }
             }
             .edgesIgnoringSafeArea(.bottom)

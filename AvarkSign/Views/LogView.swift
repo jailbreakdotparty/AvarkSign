@@ -44,3 +44,29 @@ struct LogView: View {
         }
     }
 }
+
+struct LogSheetView: View {
+    @Environment(\.dismiss) var dismiss
+    
+    var body: some View {
+        NavigationStack {
+            VStack {
+                List {
+                    LogView()
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 500)
+                }
+            }
+            .navigationTitle("Logs")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing, content: {
+                    Button(action: {
+                        dismiss()
+                    }, label: {
+                        AvarkCloseButton()
+                    })
+                })
+            }
+        }
+    }
+}

@@ -63,3 +63,9 @@ struct NeoSignerApp: App {
 }
 
 extension String: Error {}
+
+extension UIApplication {
+    static var appVersion: String? {
+        return Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+    }
+}

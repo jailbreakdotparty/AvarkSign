@@ -1,8 +1,8 @@
 //
 //  CertificateImportViews.swift
-//  NeoSigner
+//  AvarkSign
 //
-//  Created by Skadz on 2/26/25.
+//  Created by jailbreak.party on 2/26/25.
 //
 
 import SwiftUI
@@ -16,20 +16,38 @@ struct AddCertificateCard: View {
         Button(action: {
             isImportSheetPresented = true
         }) {
-            HStack {
-                Spacer()
-                Image(systemName: "plus")
-                    .foregroundStyle(.accent)
-                    .imageScale(.large)
-                Spacer()
+            if #available(iOS 26.0, *) {
+                HStack {
+                    Spacer()
+                    Image(systemName: "plus")
+                        .foregroundStyle(.accent)
+                        .imageScale(.large)
+                    Spacer()
+                }
+                .frame(height: 80)
+                .overlay(content: {
+                    RoundedRectangle(cornerRadius: 14)
+                        .stroke(.tertiary, style: StrokeStyle(lineWidth: 4, dash: [15, 5]))
+                })
+                .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 14.0))
+                .background(.accent.opacity(0.2))
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+            } else {
+                HStack {
+                    Spacer()
+                    Image(systemName: "plus")
+                        .foregroundStyle(.accent)
+                        .imageScale(.large)
+                    Spacer()
+                }
+                .frame(height: 80)
+                .overlay(content: {
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(.tertiary, style: StrokeStyle(lineWidth: 4, dash: [15, 5]))
+                })
+                .background(.quinary)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
             }
-            .frame(height: 80)
-            .overlay(content: {
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(.tertiary, style: StrokeStyle(lineWidth: 4, dash: [15, 5]))
-            })
-            .background(.quinary)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .sheet(isPresented: $isImportSheetPresented, content: {
             ImportCertificateView(certManager: certManager)
@@ -120,42 +138,25 @@ struct FileImportCard: View {
             isPresented = true
         }) {
             HStack {
-                HStack {
-                    VStack(alignment: .leading) {
-                        Text(name)
-                            .font(.system(size: 18, weight: .medium))
-                            .foregroundStyle(.primary)
-                            .multilineTextAlignment(.leading)
-                        Text(".\(fileExtension)")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.leading)
-                        Text(LocalizedStringKey("*\(isImported ? "\(selectedFileURL!.lastPathComponent), \(fileSize(at: selectedFileURL!))" : "Required")*"))
-                                .font(.system(size: 12, weight: .medium))
-                                .foregroundStyle(.tertiary)
-                                .multilineTextAlignment(.leading)
-                                .padding(.top, 0.45)
-                    }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 12)
-                    Spacer()
-                    
-                    if isImported {
-                        Image(systemName: "checkmark.circle.fill")
-                            .imageScale(.large)
-                            .tint(.primary)
-                            .padding(12)
-                    } else {
-                        Image(systemName: "circle")
-                            .imageScale(.large)
-                            .tint(.primary)
-                            .padding(12)
-                    }
+                VStack(alignment: .leading) {
+                    Text(name)
+                        .font(.headline)
+                    Text(".\(fileExtension)")
+                        .font(.subheadline)
+                    Text(LocalizedStringKey("\(isImported ? "\(selectedFileURL!.lastPathComponent), \(fileSize(at: selectedFileURL!))" : "Not Imported")"))
+                        .font(.footnote)
+                        .opacity(0.6)
+                        .multilineTextAlignment(.leading)
                 }
-                .tint(.primary)
+                Spacer()
+                Image(systemName: isImported ? "checkmark.circle.fill" : "circle")
+                    .font(.title3)
             }
-            .frame(width: 340, height: 80)
-            .background(Color(UIColor.quaternarySystemFill)).cornerRadius(10)
+            .foregroundStyle(.foreground)
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color(.quaternarySystemFill))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
         }
         .fileImporter(
             isPresented: $isPresented,
@@ -193,31 +194,32 @@ struct ImportCertificateView: View {
         NavigationStack {
             VStack {
                 List {
-                    Section(header: Text("Files"), content: {
+                    Section(header: HStack {
+                        Image(systemName: "doc")
+                        Text("Files")
+                    }, content: {
                         FileImportCard(name: "Provisioning File", fileExtension: "mobileprovision", isPresented: $isMobileProvisionFilePickerPresented, isImported: $mobileProvisionImported, selectedFileURL: $selectedMobileProvisionURL)
-                            .frame(maxWidth: .infinity)
-                        
+                                .frame(maxWidth: .infinity)
                         VStack {
                             FileImportCard(name: "Signing Certificate", fileExtension: "p12", isPresented: $isP12FilePickerPresented, isImported: $p12Imported, selectedFileURL: $selectedP12URL)
                                 .frame(maxWidth: .infinity)
-                            SecureField("Enter Certificate Password", text: $p12PasswordInput)
-                                .modifier(fancyInputViewModifier())
-                                .autocorrectionDisabled(true)
-                                .textContentType(.password)
-                                .padding(.top, 2)
-                                .multilineTextAlignment(.center)
-                                .focused($keyboardFocused)
+                            if p12Imported {
+                                AvarkTextField(text: "Certificate Password", fieldData: $p12PasswordInput)
+                            }
                         }
                     })
                     
                     if selectedMobileProvisionURL != nil {
-                        Section(header: Text("Details"), content: {
+                        Section(header: HStack {
+                            Image(systemName: "eye")
+                            Text("Preview")
+                        }, content: {
                             CertificatePreviewCard(mobileProvisionURL: selectedMobileProvisionURL!, showDetails: true, allowSelection: false)
                         })
                     }
                     
                     Section {
-                        Button(action: {
+                        AvarkButton(text: "Add Certificate", icon: "plus", foregroundStyle: (selectedMobileProvisionURL == nil || selectedP12URL == nil || p12PasswordInput.isEmpty) ? Color(UIColor.secondarySystemFill) : .accent, isDisabled: selectedMobileProvisionURL == nil || selectedP12URL == nil || p12PasswordInput.isEmpty, action: {
                             do {
                                 Haptic.shared.play(.light)
                                 _ = try certManager.addCertificate(mpURL: selectedMobileProvisionURL!, p12URL: selectedP12URL!, p12Pass: p12PasswordInput)
@@ -228,27 +230,19 @@ struct ImportCertificateView: View {
                                 Alertinator.shared.alert(title: "Error adding certificate!", body: "An error occurred while adding the certificate: \(error.localizedDescription)")
                                 return
                             }
-                        }) {
-                            Text("Add certificate")
-                                .font(.system(size: 22, weight: .medium))
-                                .padding(6)
-                                .foregroundStyle(Color(UIColor.systemBackground))
-                                .background((selectedMobileProvisionURL == nil || selectedP12URL == nil || p12PasswordInput.isEmpty) ? Color(UIColor.secondarySystemFill) : .accent).cornerRadius(8)
-                        }
-                        .disabled(selectedMobileProvisionURL == nil || selectedP12URL == nil || p12PasswordInput.isEmpty)
-                        .frame(maxWidth: .infinity)
+                        })
                     }
                     .listRowBackground(Color.clear)
                 }
             }
-            .navigationTitle("Add a certificate")
+            .navigationTitle("Import Certificate")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing, content: {
                     Button(action: {
                         dismiss()
                     }, label: {
-                        CloseButton()
+                        AvarkCloseButton()
                     })
                 })
             }

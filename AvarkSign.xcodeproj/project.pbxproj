@@ -27,6 +27,7 @@
 		43B16C212D7E72A000BAB9ED /* AssetCatalogWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = 43B16C202D7E72A000BAB9ED /* AssetCatalogWrapper */; };
 		43ECF0002D6E826C002DA79F /* Glur in Frameworks */ = {isa = PBXBuildFile; productRef = 43ECEFFF2D6E826C002DA79F /* Glur */; };
 		43ECF0812D6E84C0002DA79F /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 43ECF0802D6E84C0002DA79F /* NukeUI */; };
+		AAAAA85E2E615BE300350301 /* DeviceKit in Frameworks */ = {isa = PBXBuildFile; productRef = AAAAA85D2E615BE300350301 /* DeviceKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -96,6 +97,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				432CE8722DC5E6A8005CE384 /* AssetCatalogWrapper in Frameworks */,
+				AAAAA85E2E615BE300350301 /* DeviceKit in Frameworks */,
 				431661212D6D82320085FB20 /* openssl.xcframework in Frameworks */,
 				43A254002D6E72CE00DEE1C7 /* WelcomeSheet in Frameworks */,
 				43ECF0002D6E826C002DA79F /* Glur in Frameworks */,
@@ -201,6 +203,7 @@
 				43ECF0802D6E84C0002DA79F /* NukeUI */,
 				4349AA512D78092F00CB4576 /* AssetCatalogWrapper */,
 				43B16C202D7E72A000BAB9ED /* AssetCatalogWrapper */,
+				AAAAA85D2E615BE300350301 /* DeviceKit */,
 			);
 			productName = NeoSigner;
 			productReference = 43BD3D702D6D7A4300459757 /* AvarkSign.app */;
@@ -238,6 +241,7 @@
 				43ECEFFE2D6E826C002DA79F /* XCRemoteSwiftPackageReference "Glur" */,
 				43ECF07F2D6E84C0002DA79F /* XCRemoteSwiftPackageReference "Nuke" */,
 				43B16C1F2D7E72A000BAB9ED /* XCRemoteSwiftPackageReference "PrivateKits" */,
+				AAAAA85C2E615BE300350301 /* XCRemoteSwiftPackageReference "DeviceKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 43BD3D712D6D7A4300459757 /* Products */;
@@ -407,7 +411,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = TA2N4LNLT8;
+				DEVELOPMENT_TEAM = HTH7RGGR9D;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AvarkSign/Info.plist;
@@ -425,7 +429,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.jbdotparty.AvarkSign;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jbdotparty.AvarkSignPlus;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = AvarkSign/Other/bridge.h;
@@ -442,7 +446,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = TA2N4LNLT8;
+				DEVELOPMENT_TEAM = HTH7RGGR9D;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AvarkSign/Info.plist;
@@ -460,7 +464,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.jbdotparty.AvarkSign;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jbdotparty.AvarkSignPlus;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = AvarkSign/Other/bridge.h;
@@ -549,6 +553,14 @@
 				minimumVersion = 12.8.0;
 			};
 		};
+		AAAAA85C2E615BE300350301 /* XCRemoteSwiftPackageReference "DeviceKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/devicekit/DeviceKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.6.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -590,6 +602,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 43ECF07F2D6E84C0002DA79F /* XCRemoteSwiftPackageReference "Nuke" */;
 			productName = NukeUI;
+		};
+		AAAAA85D2E615BE300350301 /* DeviceKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AAAAA85C2E615BE300350301 /* XCRemoteSwiftPackageReference "DeviceKit" */;
+			productName = DeviceKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -19,38 +19,72 @@ struct LibraryView: View {
             VStack {
                 List {
                     if !libraryManager.apps.isEmpty {
-                        Section(header: Text("Remote").foregroundStyle(.primary).font(.title2.weight(.bold)).textCase(nil), content: {
-                            ForEach(libraryManager.apps.filter { $0.cameFromRepo }) { app in
-                                InlineAppCard(app: app)
-                            }
-                            .onDelete(perform: libraryManager.removeApp)
-                        })
+                        let remoteAppData = libraryManager.apps.filter { $0.cameFromRepo }
                         
-                        Section(header: Text("Imported").foregroundStyle(.primary).font(.title2.weight(.bold)).textCase(nil), content: {
-                            ForEach(libraryManager.apps.filter { !$0.cameFromRepo }) { app in
-                                InlineAppCard(app: app)
-                            }
-                            .onDelete(perform: libraryManager.removeApp)
-                        })
-                    } else {
-                        Section {
-                            VStack {
-                                Text("No apps imported!")
-                                    .foregroundStyle(.secondary)
-                                    .font(.system(size: 24, weight: .medium))
-                                HStack(spacing: 0) {
-                                    Text("Press the ")
-                                        .foregroundStyle(.tertiary)
-                                        .font(.system(size: 18, weight: .medium))
-                                    Image(systemName: "plus")
-                                        .foregroundStyle(.accent)
-                                        .imageScale(.medium)
-                                    Text(" button to import an IPA.")
-                                        .foregroundStyle(.tertiary)
-                                        .font(.system(size: 16, weight: .medium))
+                        if !remoteAppData.isEmpty {
+                            Section {
+                                ForEach(remoteAppData) { app in
+                                    InlineAppCard(app: app)
+                                }
+                                .onDelete(perform: libraryManager.removeApp)
+                            } header: {
+                                HStack {
+                                    Image(systemName: "wifi")
+                                    Text("Remote")
                                 }
                             }
-                            .frame(maxWidth: .infinity, alignment: .center)
+                        }
+                        
+                        let importedAppData = libraryManager.apps.filter { !$0.cameFromRepo }
+                        
+                        if !importedAppData.isEmpty {
+                            Section {
+                                ForEach(importedAppData) { app in
+                                    InlineAppCard(app: app)
+                                }
+                                .onDelete(perform: libraryManager.removeApp)
+                            } header: {
+                                HStack {
+                                    Image(systemName: "plus.square.fill")
+                                    Text("Imported")
+                                }
+                            }
+                        }
+                        
+                    } else {
+                        Section {
+                            if #available(iOS 26.0, *) {
+                                VStack {
+                                    Text("No apps imported!")
+                                        .font(.system(.title2, weight: .semibold))
+                                    HStack(spacing: 0) {
+                                        Text("Press the ")
+                                            .opacity(0.6)
+                                        Image(systemName: "plus")
+                                        Text(" button to import an IPA.")
+                                            .opacity(0.6)
+                                    }
+                                }
+                                .listRowInsets(EdgeInsets())
+                                .padding()
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                                .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 26.0))
+                                .listRowBackground(Color(.accent))
+                            } else {
+                                VStack {
+                                    Text("No apps imported!")
+                                        .font(.system(.title2, weight: .semibold))
+                                    HStack(spacing: 0) {
+                                        Text("Press the ")
+                                            .opacity(0.6)
+                                        Image(systemName: "plus")
+                                        Text(" button to import an IPA.")
+                                            .opacity(0.6)
+                                    }
+                                }
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .listRowBackground(Color(.accent))
+                            }
                         }
                     }
                 }
@@ -62,6 +96,7 @@ struct LibraryView: View {
                         Button(action: {
                             showImportSheet = true
                         }) {
+                            Image(systemName: "folder")
                             Text("Import from Files")
                         }
                         
@@ -86,6 +121,7 @@ struct LibraryView: View {
                                 }
                             }
                         }) {
+                            Image(systemName: "link")
                             Text("Import from URL")
                         }
                     }, label: {
@@ -127,18 +163,37 @@ struct InlineAppCard: View {
     var body: some View {
         HStack {
             HStack {
-                URLImageView(url: app.iconURL.absoluteString)
-                    .frame(width: 50, height: 50)
-                    .cornerRadius(10)
-                
-                VStack(alignment: .leading) {
-                    Text(app.name)
-                        .font(.headline)
-                    Text(LocalizedStringKey("\(app.bundleVersion) • \(format(bytes: Double(folderSize(atPath: app.bundleURL.path))))"))
-                        .font(.subheadline)
-                        .lineLimit(1)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                if #available(iOS 26.0, *) {
+                    HStack(spacing: 12) {
+                        URLImageView(url: app.iconURL.absoluteString)
+                            .frame(width: 50, height: 50)
+                            .cornerRadius(14)
+                            .glassEffect(in: .rect(cornerRadius: 14))
+                        
+                        VStack(alignment: .leading) {
+                            Text(app.name)
+                                .font(.headline)
+                            Text(LocalizedStringKey("\(app.bundleVersion) • \(format(bytes: Double(folderSize(atPath: app.bundleURL.path))))"))
+                                .font(.subheadline)
+                                .lineLimit(1)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                } else {
+                    URLImageView(url: app.iconURL.absoluteString)
+                        .frame(width: 50, height: 50)
+                        .cornerRadius(10)
+                    
+                    VStack(alignment: .leading) {
+                        Text(app.name)
+                            .font(.headline)
+                        Text(LocalizedStringKey("\(app.bundleVersion) • \(format(bytes: Double(folderSize(atPath: app.bundleURL.path))))"))
+                            .font(.subheadline)
+                            .lineLimit(1)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
             
@@ -183,8 +238,24 @@ struct InlineAppCard: View {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle())
                 } else {
-                    Image(systemName: "arrow.down.app")
-                        .imageScale(.large)
+                    if #available(iOS 26.0, *) {
+                        HStack {
+                            Text("Install")
+                                .foregroundStyle(.white)
+                        }
+                        .padding(8)
+                        .background(.accent)
+                        .cornerRadius(50)
+                        .glassEffect(.regular.interactive())
+                    } else {
+                        HStack {
+                            Text("Install")
+                                .foregroundStyle(.white)
+                        }
+                        .padding(8)
+                        .background(.accent)
+                        .cornerRadius(50)
+                    }
                 }
             })
         }
