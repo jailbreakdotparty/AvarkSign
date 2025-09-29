@@ -81,12 +81,13 @@ struct AvarkCloseButton: View {
 
 struct AvarkTextField: View {
     let text: String
+    let inputType: UITextContentType?
     @Binding var fieldData: String
     
     var body: some View {
-        SecureField("Certificate Password", text: $fieldData)
+        TextField(text, text: $fieldData)
             .autocorrectionDisabled(true)
-            .textContentType(.password)
+            .textContentType(inputType)
             .multilineTextAlignment(.leading)
             .padding()
             .background(Color(.quaternarySystemFill))

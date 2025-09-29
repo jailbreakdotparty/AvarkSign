@@ -8,6 +8,7 @@
 import SwiftUI
 import UIKit
 import DeviceKit
+import ZsignSwift
 
 struct SettingsView: View {
     @AppStorage("installMethod") private var installMethod: Int = 0 // 0 = Remote, 1 = Local
@@ -22,6 +23,17 @@ struct SettingsView: View {
     @Environment(\.openURL) var openURL
     
     let device = Device.current
+    let splashes: [String] = [ // feeling like Ryan Price (without the cow)
+        "The signer of today! Tomorrow Update coming soon.",
+        "ZipGod approved!",
+        "Not your regular SwiftUI zsign wrapper!",
+        "IPAs not included.",
+        "Some assembly required.",
+        "Certificates sold seperately.",
+        "Do NOT tap the credit text 8 times!!",
+        ":3"
+    ]
+    @State private var splashIndex: Int = 0
     
     var body: some View {
         NavigationStack {
@@ -32,19 +44,21 @@ struct SettingsView: View {
                         Text("About")
                     }, footer: VStack(alignment: .leading) {
                         Text("Made by jailbreak.party. Special thanks to zhylynn, loyahdev, khcrysalis, Lrdsnow, and bebebole.\n")
-                        Text("[\"It won't give you a $1 discount code...\"](https://tikolu.net/i/llkvb)")
                             .onTapGesture(perform: {
                                 nonSuspiciousIntName += 1
                                 
                                 if nonSuspiciousIntName == 8 {
                                     if confettiModeActivated {
                                         Alertinator.shared.alert(title: "Nice try.", body: "Did you really think doing that again would somehow disable Confetti Mode? You'll have to try harder than that.")
+                                        nonSuspiciousIntName = 0
                                     } else {
                                         confettiModeActivated = true
                                         Alertinator.shared.alert(title: "🎉", body: "Confetti Mode activated! You'll find out what it does in due time. No, you can't turn it off. You did this to yourself.")
+                                        nonSuspiciousIntName = 0
                                     }
                                 }
                             })
+                        Text("\(splashes[splashIndex])")
                     }) {
                         VStack {
                             HStack(spacing: 12) {
@@ -68,7 +82,7 @@ struct SettingsView: View {
                             
                             HStack {
                                 AvarkButton(text: "Discord", icon: "message", foregroundStyle: .blue, isDisabled: false, action: {
-                                    openURL(URL(string: "https://discord.gg/XPj66zZ4gT")!)
+                                    openURL(URL(string: "https://jailbreak.party/discord")!)
                                 })
                                 AvarkButton(text: "GitHub", icon: "apple.terminal", foregroundStyle: .accent, isDisabled: false, action: {
                                     openURL(URL(string: "https://github.com/jailbreakdotparty/AvarkSign")!)
@@ -159,6 +173,51 @@ struct SettingsView: View {
                         } else {
                             ForEach(certManager.certificates) { cert in
                                 CertificateSelectionCard(certManager: certManager, certificate: cert)
+                                    .contextMenu {
+                                        Button(action: {
+                                            Alertinator.shared.prompt(title: "Rename Certificate", placeholder: cert.name, completion: { newName in
+                                                if newName == nil {
+                                                    Alertinator.shared.alert(title: "Invalid Name", body: "Please enter a new certificate name.")
+                                                } else {
+                                                    certManager.renameCertificate(cert: cert, to: newName!)
+                                                }
+                                            })
+                                        }, label: {
+                                            Label("Rename", systemImage: "pencil")
+                                        })
+                                        
+                                        Button(action: {
+                                            do {
+                                                let certURL = cert.url
+                                                let passwordData = try Data(contentsOf: certURL.appendingPathComponent("p12_password"))
+                                                let p12Pass = String(data: passwordData, encoding: .utf8) ?? ""
+                                                
+                                                let mpPath = certURL.appendingPathComponent("mp.mobileprovision")
+                                                let p12Path = certURL.appendingPathComponent("cert.p12")
+                                                
+                                                Zsign.checkRevokage(provisionPath: mpPath.path(), p12Path: p12Path.path(), p12Password: p12Pass, completionHandler: { (status, date, _) in
+                                                    let formatter = ISO8601DateFormatter()
+                                                    let fallbackDate = formatter.date(from: "2001-09-11T01:46:40-07:00")!
+                                                    
+                                                    let readableFormatter = DateFormatter()
+                                                    readableFormatter.dateFormat = "MMMM d, yyyy"
+                                                    let expirationDate = readableFormatter.string(from: date ?? fallbackDate)
+                                                    
+                                                    if status == 1 {
+                                                        Alertinator.shared.alert(title: ":(", body: "Your certificate has been revoked or is expired.")
+                                                    } else if status == 0 {
+                                                        Alertinator.shared.alert(title: ":)", body: "Your certificate is valid! \(cert.name) expires on \(expirationDate).")
+                                                    }
+                                                })
+                                            } catch {
+                                                print(error)
+                                                Alertinator.shared.alert(title: "Error checking certificate status", body: "An error occurred while checking your certificate status. Please ensure you are connected to the internet and try again later.")
+                                                return
+                                            }
+                                        }, label: {
+                                            Label("Check Status", systemImage: "person.text.rectangle")
+                                        })
+                                    }
                             }
                             .onDelete(perform: certManager.deleteCert)
                             
@@ -178,49 +237,58 @@ struct SettingsView: View {
                         Image(systemName: "ant")
                         Text("Debugging")
                     }, content: {
-                        HStack {
-                            AvarkButton(text: "Reset", icon: "trash", foregroundStyle: .red, isDisabled: false, action: {
-                                Alertinator.shared.alert(title: "Reset", body: "Are you sure you'd like to reset AvarkSign? This will remove all certificates and applications.", showCancel: true, action: {
-                                    let fileManager = FileManager.default
-                                    let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
-                                    let libraryManager = LibraryManager()
-                                    let repoManager = RepoManager()
-                                    
-                                    do {
-                                        let filePaths = try fileManager.contentsOfDirectory(atPath: documentsDirectory.path)
+                        VStack {
+                            HStack {
+                                AvarkButton(text: "Reset", icon: "trash", foregroundStyle: .red, isDisabled: false, action: {
+                                    Alertinator.shared.alert(title: "Reset", body: "Are you sure you'd like to reset AvarkSign? This will remove all certificates and applications.", showCancel: true, action: {
+                                        let fileManager = FileManager.default
+                                        let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+                                        let libraryManager = LibraryManager()
+                                        let repoManager = RepoManager()
                                         
-                                        for filePath in filePaths {
-                                            let fullFilePath = documentsDirectory.appendingPathComponent(filePath).path
-                                            try fileManager.removeItem(atPath: fullFilePath)
+                                        do {
+                                            let filePaths = try fileManager.contentsOfDirectory(atPath: documentsDirectory.path)
+                                            
+                                            for filePath in filePaths {
+                                                let fullFilePath = documentsDirectory.appendingPathComponent(filePath).path
+                                                try fileManager.removeItem(atPath: fullFilePath)
+                                            }
+                                            
+                                            libraryManager.apps = []
+                                            libraryManager.saveApps()
+                                            
+                                            repoManager.repos = []
+                                            repoManager.saveRepos()
+                                            
+                                            certManager.certificates = []
+                                            certManager.saveCertificates()
+                                            
+                                            Alertinator.shared.alert(title: "Success!", body: "Successfully cleared all backend data. AvarkSign will close shortly.", action: {
+                                                exitApp()
+                                            })
+                                        } catch {
+                                            print(error)
+                                            Alertinator.shared.alert(title: "Error!", body: "Failed to clear backend data: \(error.localizedDescription).")
                                         }
-                                        
-                                        libraryManager.apps = []
-                                        libraryManager.saveApps()
-                                        
-                                        repoManager.repos = []
-                                        repoManager.saveRepos()
-                                        
-                                        certManager.certificates = []
-                                        certManager.saveCertificates()
-                                        
-                                        Alertinator.shared.alert(title: "Success!", body: "Successfully cleared all backend data. AvarkSign will close shortly.", action: {
-                                            exitApp()
-                                        })
-                                    } catch {
-                                        print(error)
-                                        Alertinator.shared.alert(title: "Error!", body: "Failed to clear backend data: \(error.localizedDescription).")
-                                    }
+                                    })
                                 })
-                            })
-                            
-                            AvarkButton(text: "View Logs", icon: "apple.terminal", foregroundStyle: .blue, isDisabled: false, action: {
-                                showLogsView = true
+                                
+                                AvarkButton(text: "View Logs", icon: "apple.terminal", foregroundStyle: .blue, isDisabled: false, action: {
+                                    showLogsView = true
+                                })
+                            }
+                            AvarkButton(text: "Instant Gratification", icon: "party.popper", foregroundStyle: .accent, isDisabled: false, action: {
+                                Haptic.shared.play(.soft)
+                                dropDatConfetti(true)
                             })
                         }
                     })
                 }
             }
             .navigationTitle("Settings")
+            .onAppear(perform: {
+                splashIndex = Int.random(in: 0..<splashes.count)
+            })
             .sheet(isPresented: $showCertImportSheet, content: {
                 ImportCertificateView(certManager: certManager)
             })

@@ -219,9 +219,9 @@ struct ConfettiView: UIViewRepresentable {
             return emitterLayer
         }
         
-        var foregroundConfettiLayer = createConfettiLayer()
+        let foregroundConfettiLayer = createConfettiLayer()
 
-        var backgroundConfettiLayer: CAEmitterLayer = {
+        let backgroundConfettiLayer: CAEmitterLayer = {
             let emitterLayer = createConfettiLayer()
             
             for emitterCell in emitterLayer.emitterCells ?? [] {
@@ -249,7 +249,7 @@ struct ConfettiView: UIViewRepresentable {
     typealias UIViewType = UIView
 }
 
-func dropDatConfetti() {
+func dropDatConfetti(_ always: Bool = false) {
     guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
           let window = windowScene.windows.first else { return }
     
@@ -264,7 +264,7 @@ func dropDatConfetti() {
     confettiView.isUserInteractionEnabled = false
     confettiView.backgroundColor = .clear
     
-    if shouldWeActuallyDropTheConfetti {
+    if shouldWeActuallyDropTheConfetti || always {
         window.addSubview(confettiView)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 6) {

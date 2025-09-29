@@ -25,6 +25,9 @@ private var welcomeSheetPages = [
 ]
 
 var weOnADebugBuild: Bool = false
+var pipe = Pipe()
+var sema = DispatchSemaphore(value: 0)
+var appLogs: String = ""
 var fileManager = FileManager.default
 
 @main
@@ -37,6 +40,19 @@ struct NeoSignerApp: App {
         if let fixMethod = class_getInstanceMethod(UIDocumentPickerViewController.self, Selector(("fix_initForOpeningContentTypes:asCopy:"))), let origMethod = class_getInstanceMethod(UIDocumentPickerViewController.self, #selector(UIDocumentPickerViewController.init(forOpeningContentTypes:asCopy:))) {
             method_exchangeImplementations(origMethod, fixMethod)
         }
+        
+        // Setup log stuff (redirect stdout)
+        pipe.fileHandleForReading.readabilityHandler = { fileHandle in
+            let data = fileHandle.availableData
+            if data.isEmpty  { // end-of-file condition
+                fileHandle.readabilityHandler = nil
+                sema.signal()
+            } else {
+                appLogs.append(String(data: data, encoding: .utf8)!)
+            }
+        }
+        setvbuf(stdout, nil, _IONBF, 0)
+        dup2(pipe.fileHandleForWriting.fileDescriptor, STDOUT_FILENO)
         
         #if DEBUG
         weOnADebugBuild = true

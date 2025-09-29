@@ -117,6 +117,18 @@ class CertificateManager: ObservableObject {
         }
     }
     
+    func renameCertificate(cert: Certificate, to newName: String) {
+        guard let index = certificates.firstIndex(where: { $0.id == cert.id }) else { return }
+        
+        certificates[index].name = newName
+        
+        if activeCertificate?.id == cert.id {
+            activeCertificate = certificates[index]
+        }
+        
+        saveCertificates()
+    }
+    
     func deleteCert(at offsets: IndexSet) {
         for i in offsets.sorted(by: >) {
             if i < certificates.count {

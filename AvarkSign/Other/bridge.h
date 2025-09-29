@@ -8,6 +8,6 @@
 #ifndef bridge_h
 #define bridge_h
 
-#include "zsign.hpp"
+//#include "zsign.hpp"
 
 #endif /* bridge_h */

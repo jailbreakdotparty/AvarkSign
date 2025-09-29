@@ -53,8 +53,6 @@ struct ContentView: View {
                                 )
                         }
                         .animation(.spring(response: 0.45, dampingFraction: 0.6), value: selectedTab)
-                    } else {
-                        
                     }
                 }
             }

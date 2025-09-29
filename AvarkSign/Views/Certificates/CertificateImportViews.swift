@@ -97,20 +97,24 @@ struct CertificateSelectionCard: View {
     
     var body: some View {
         HStack(spacing: 16) {
-            Image(systemName: "signature")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 54, height: 54)
-            
-            VStack(alignment: .leading) {
-                Text(certificate.name)
-                    .font(.headline)
-                    .lineLimit(1)
-                Text("Expires on \(certManager.parseExpirationDate(url: certificate.url.appendingPathComponent("mp.mobileprovision")))")
-                    .font(.subheadline)
-                    .minimumScaleFactor(0.8)
-                    .lineLimit(1)
+            HStack {
+                Image(systemName: "signature")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 54, height: 54)
+                
+                VStack(alignment: .leading) {
+                    Text(certificate.name)
+                        .font(.headline)
+                        .lineLimit(1)
+                    Text("Expires on \(certManager.parseExpirationDate(url: certificate.url.appendingPathComponent("mp.mobileprovision")))")
+                        .font(.subheadline)
+                        .minimumScaleFactor(0.8)
+                        .lineLimit(1)
+                }
             }
+            
+            Spacer()
             
             Image(systemName: certManager.activeCertificate == certificate ? "checkmark.circle.fill" : "circle")
                 .imageScale(.large)
@@ -204,7 +208,7 @@ struct ImportCertificateView: View {
                             FileImportCard(name: "Signing Certificate", fileExtension: "p12", isPresented: $isP12FilePickerPresented, isImported: $p12Imported, selectedFileURL: $selectedP12URL)
                                 .frame(maxWidth: .infinity)
                             if p12Imported {
-                                AvarkTextField(text: "Certificate Password", fieldData: $p12PasswordInput)
+                                AvarkTextField(text: "Certificate Password", inputType: .password, fieldData: $p12PasswordInput)
                             }
                         }
                     })

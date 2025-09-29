@@ -46,23 +46,37 @@ struct BrowseView: View {
                         })
                     } else {
                         Section {
-                            VStack {
-                                Text("No sources added!")
-                                    .foregroundStyle(.secondary)
-                                    .font(.system(size: 24, weight: .medium))
-                                HStack(spacing: 0) {
-                                    Text("Press the ")
-                                        .foregroundStyle(.tertiary)
-                                        .font(.system(size: 18, weight: .medium))
-                                    Image(systemName: "plus")
-                                        .foregroundStyle(.accent)
-                                        .imageScale(.medium)
-                                    Text(" button to add a source URL.")
-                                        .foregroundStyle(.tertiary)
-                                        .font(.system(size: 16, weight: .medium))
+                            if #available(iOS 26.0, *) {
+                                VStack {
+                                    Text("No sources added!")
+                                        .font(.system(.title2, weight: .semibold))
+                                    HStack(spacing: 0) {
+                                        Text("Press the ")
+                                            .opacity(0.6)
+                                        Image(systemName: "plus")
+                                        Text(" button to add a source URL.")
+                                            .opacity(0.6)
+                                    }
                                 }
+                                .listRowInsets(EdgeInsets())
+                                .padding()
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                                .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 26.0))
+                            } else {
+                                VStack {
+                                    Text("No sources imported!")
+                                        .font(.system(.title2, weight: .semibold))
+                                    HStack(spacing: 0) {
+                                        Text("Press the ")
+                                            .opacity(0.6)
+                                        Image(systemName: "plus")
+                                        Text(" button to add a source URL.")
+                                            .opacity(0.6)
+                                    }
+                                }
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .listRowBackground(Color(.accent))
                             }
-                            .frame(maxWidth: .infinity, alignment: .center)
                         }
                     }
                 }
@@ -72,7 +86,7 @@ struct BrowseView: View {
                 ToolbarItem(placement: .navigationBarTrailing, content: {
                     Button(action: {
                         Task {
-                            Alertinator.shared.prompt(title: "Enter Repo URL", placeholder: "URL") { urlString in
+                            Alertinator.shared.prompt(title: "Enter Source URL", placeholder: "URL") { urlString in
                                 if let isEmpty = urlString, !urlString!.isEmpty {
                                     if let url = URL(string: urlString!) {
                                         do {
@@ -80,7 +94,7 @@ struct BrowseView: View {
                                             dropDatConfetti()
                                         } catch {
                                             print(error)
-                                            Alertinator.shared.alert(title: "Error adding repo!", body: "Failed to add the repo. \(error)")
+                                            Alertinator.shared.alert(title: "Error adding source!", body: "Failed to add the source. \(error)")
                                         }
                                     } else {
                                         Alertinator.shared.alert(title: "Invalid URL!", body: "Make sure the URL is typed correctly.")

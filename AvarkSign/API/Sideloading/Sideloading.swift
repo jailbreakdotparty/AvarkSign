@@ -10,6 +10,12 @@ import UIKit
 import ZIPFoundation
 import Swifter
 import SwiftUI
+import Zsign
+
+// this whole entire everything of all of this is so horrible and retarded.
+// i apologize sincerely to anybody trying to work with this.
+// rewrite eta idk, but it needs to happen
+// - Skadz, 09/28/25
 
 public class Sideloading: ObservableObject {
     @Environment(\.openURL) private var openURL
@@ -24,7 +30,7 @@ public class Sideloading: ObservableObject {
     var hasStartedServer: Bool = false
     var hasDoneRemoteInstallSoWeCanCloseTheFuckingServer: Bool = false
     
-    func sideload(app: LibraryApp, cert: Certificate, customizationOptions: AppCustomizationOptions? = nil, installMethod: Int) async -> (success: Bool, installURL: URL?) {
+    func sideload(app: LibraryApp, cert: Certificate, customizationOptions: AppCustomizationOptions? = nil, installMethod: Int) async -> Bool {
         let mpPath: URL
         let p12Path: URL
         let p12Pass: String
@@ -47,154 +53,155 @@ public class Sideloading: ObservableObject {
         } catch {
             print("Failed to get MobileProvision and P12 info! Make sure you've selected a certificate and that the certificate files are valid.")
             print(error)
-            return (false, nil)
+            return false
         }
         
         guard let destinationPath = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("tmp/") else {
             print("[!] Documents directory not found")
-            return (false, nil)
+            return false
         }
         
         print("[-] Clearing out old files...")
         cleanup()
         
-        let code = zsign(appURL.path, mpPath.path, p12Path.path, p12Pass, customizationOptions?.bundleID ?? "", customizationOptions?.appName ?? "", customizationOptions?.bundleVersion ?? "", true)
-        if code == 0 {
-            print("[*] zsign returned 0, this is good.")
-            let signedIPAPath = destinationPath.appendingPathComponent("signed.ipa")
-            
-            let payloadPath = destinationPath.appendingPathComponent("Payload")
-            
-            if !fileManager.fileExists(atPath: payloadPath.path) {
-                do {
-                    try fileManager.createDirectory(at: payloadPath, withIntermediateDirectories: true)
-                    try fileManager.copyItem(at: appURL, to: payloadPath.appendingPathComponent(appURL.lastPathComponent))
-                    appURL = payloadPath.appendingPathComponent(appURL.lastPathComponent)
-                } catch {
-                    print("[!] Failed to repackage IPA!")
-                    return (false, nil)
-                }
-            }
-            
-            do {
-                try fileManager.zipItem(at: payloadPath, to: signedIPAPath)
-                print("[*] Zipping Payload folder successful. Signed IPA path: \(signedIPAPath.path)")
-            } catch {
-                print("[!] Failed to zip the Payload folder: \(error)")
-                return (false, nil)
-            }
-            
-            let infoPlistURL = appURL.appendingPathComponent("Info.plist")
-            
-            let bundleId = extractFieldFromPlist(at: infoPlistURL, field: "CFBundleIdentifier")
-            
-            let bundleVersion = extractFieldFromPlist(at: infoPlistURL, field: "CFBundleVersion")
-            
-            let plistContent = """
-            <?xml version="1.0" encoding="UTF-8"?>
-                <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
-                "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-                <plist version="1.0">
-                    <dict>
-                        <key>items</key>
-                        <array>
-                            <dict>
-                                <key>assets</key>
-                                <array>
-                                    <dict>
-                                        <key>kind</key>
-                                        <string>software-package</string>
-                                        <key>url</key>
-                                        <string>\(installMethod == 1 ? "https://avarksign.backloop.dev:8080/signed.ipa" : "http://localhost:8080/signed.ipa")</string>
-                                    </dict>
-                                    <dict>
-                                        <key>kind</key>
-                                        <string>display-image</string>
-                                        <key>needs-shine</key>
-                                        <false/>
-                                        <key>url</key>
-                                        <string>\(installMethod == 1 ? "https://avarksign.backloop.dev:8080/appIcon.png" : "http://localhost:8080/appIcon.png")</string>
-                                    </dict>
-                                    <dict>
-                                        <key>kind</key>
-                                        <string>full-size-image</string>
-                                        <key>needs-shine</key>
-                                        <false/>
-                                        <key>url</key>
-                                        <string>\(installMethod == 1 ? "https://avarksign.backloop.dev:8080/appIcon.png" : "http://localhost:8080/appIcon.png")</string>
-                                    </dict>
-                                </array>
-                                <key>metadata</key>
-                                <dict>
-                                    <key>bundle-identifier</key>
-                                    <string>\(String(describing: bundleId))</string>
-                                    <key>bundle-version</key>
-                                    <string>\(String(describing: bundleVersion))</string>
-                                    <key>kind</key>
-                                    <string>software</string>
-                                    <key>title</key>
-                                    <string>\(extractFieldFromPlist(at: infoPlistURL, field: "CFBundleDisplayName"))</string>
-                                </dict>
-                            </dict>
-                        </array>
-                    </dict>
-                </plist>
-            """
-            if let plistPath = createPlistFile(content: plistContent, destinationPath: destinationPath) {
-                print("[*] Installation manifest created at path: \(plistPath)")
-                let server: HttpServer = HttpServer()
-                
-                var installURL: URL? = nil
-                
-                if installMethod == 1 {
-                    do {
-                        let serverBundle = try NeoServer.shared.setupServerFiles(ipaPath: signedIPAPath, appIconPath: extractAppIcon(appFolderURL: appURL), manifestPath: URL(fileURLWithPath: plistPath))
-                        NeoServer.shared.startServer(serverBundle)
-                    } catch {
-                        print("[!] Failed to start server!")
-                        print(error)
-                        return (false, nil)
-                    }
+        zsign(appURL.path, mpPath.path, p12Path.path, p12Pass, "", customizationOptions?.bundleID ?? "", customizationOptions?.appName ?? "", customizationOptions?.bundleVersion ?? "", false, true, { [self] success, error in
+            Task {
+                if success {
+                    print("[*] zsign returned 0, this is good.")
+                    let signedIPAPath = destinationPath.appendingPathComponent("signed.ipa")
                     
-                    print("[*] Installing...")
-                    installURL = NeoServer.shared.installURL
-                    print("[*] Manifest URL: \(installURL!.absoluteString)")
-                    await openURL(installURL!)
-                } else if installMethod == 0 {
-                    if !hasStartedServer {
+                    let payloadPath = destinationPath.appendingPathComponent("Payload")
+                    
+                    if !fileManager.fileExists(atPath: payloadPath.path) {
                         do {
-                            try server.start(8080)
-                            hasStartedServer = true
-                            print("[*] HTTP server started")
+                            try fileManager.createDirectory(at: payloadPath, withIntermediateDirectories: true)
+                            try fileManager.copyItem(at: appURL, to: payloadPath.appendingPathComponent(appURL.lastPathComponent))
+                            appURL = payloadPath.appendingPathComponent(appURL.lastPathComponent)
                         } catch {
-                            print("[!] Failed to start server.")
-                            return (false, nil)
+                            print("[!] Failed to repackage IPA!")
+                            return false
                         }
                     }
                     
-                    server["/" + "signed.ipa"] = shareFile(signedIPAPath.path)
-                    server["" + "appIcon.png"] = shareFile(extractAppIcon(appFolderURL: appURL).path)
-                    server["/install.plist"] = shareFile(plistPath)
+                    do {
+                        try fileManager.zipItem(at: payloadPath, to: signedIPAPath)
+                        print("[*] Zipping Payload folder successful. Signed IPA path: \(signedIPAPath.path)")
+                    } catch {
+                        print("[!] Failed to zip the Payload folder: \(error)")
+                        return false
+                    }
                     
-                    print("[*] Installing...")
-                    installURL = URL(string: "itms-services://?action=download-manifest&url=https://spyware.party/install")!
-                    print("[*] Manifest URL: \(installURL!.absoluteString)")
-                    await openURL(installURL!)
-                    hasDoneRemoteInstallSoWeCanCloseTheFuckingServer = true
+                    let infoPlistURL = appURL.appendingPathComponent("Info.plist")
+                    
+                    let bundleId = extractFieldFromPlist(at: infoPlistURL, field: "CFBundleIdentifier")
+                    
+                    let bundleVersion = extractFieldFromPlist(at: infoPlistURL, field: "CFBundleVersion")
+                    
+                    let plistContent = """
+                <?xml version="1.0" encoding="UTF-8"?>
+                    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+                    "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+                    <plist version="1.0">
+                        <dict>
+                            <key>items</key>
+                            <array>
+                                <dict>
+                                    <key>assets</key>
+                                    <array>
+                                        <dict>
+                                            <key>kind</key>
+                                            <string>software-package</string>
+                                            <key>url</key>
+                                            <string>\(installMethod == 1 ? "https://avarksign.backloop.dev:8080/signed.ipa" : "http://localhost:8080/signed.ipa")</string>
+                                        </dict>
+                                        <dict>
+                                            <key>kind</key>
+                                            <string>display-image</string>
+                                            <key>needs-shine</key>
+                                            <false/>
+                                            <key>url</key>
+                                            <string>\(installMethod == 1 ? "https://avarksign.backloop.dev:8080/appIcon.png" : "http://localhost:8080/appIcon.png")</string>
+                                        </dict>
+                                        <dict>
+                                            <key>kind</key>
+                                            <string>full-size-image</string>
+                                            <key>needs-shine</key>
+                                            <false/>
+                                            <key>url</key>
+                                            <string>\(installMethod == 1 ? "https://avarksign.backloop.dev:8080/appIcon.png" : "http://localhost:8080/appIcon.png")</string>
+                                        </dict>
+                                    </array>
+                                    <key>metadata</key>
+                                    <dict>
+                                        <key>bundle-identifier</key>
+                                        <string>\(String(describing: bundleId))</string>
+                                        <key>bundle-version</key>
+                                        <string>\(String(describing: bundleVersion))</string>
+                                        <key>kind</key>
+                                        <string>software</string>
+                                        <key>title</key>
+                                        <string>\(extractFieldFromPlist(at: infoPlistURL, field: "CFBundleDisplayName"))</string>
+                                    </dict>
+                                </dict>
+                            </array>
+                        </dict>
+                    </plist>
+                """
+                    if let plistPath = createPlistFile(content: plistContent, destinationPath: destinationPath) {
+                        print("[*] Installation manifest created at path: \(plistPath)")
+                        let server: HttpServer = HttpServer()
+                        
+                        var installURL: URL? = nil
+                        
+                        if installMethod == 1 {
+                            do {
+                                let serverBundle = try NeoServer.shared.setupServerFiles(ipaPath: signedIPAPath, appIconPath: extractAppIcon(appFolderURL: appURL), manifestPath: URL(fileURLWithPath: plistPath))
+                                NeoServer.shared.startServer(serverBundle)
+                            } catch {
+                                print("[!] Failed to start server!")
+                                print(error)
+                                return false
+                            }
+                            
+                            print("[*] Installing...")
+                            installURL = NeoServer.shared.installURL
+                            print("[*] Manifest URL: \(installURL!.absoluteString)")
+                            await openURL(installURL!)
+                        } else if installMethod == 0 {
+                            if !hasStartedServer {
+                                do {
+                                    try server.start(8080)
+                                    hasStartedServer = true
+                                    print("[*] HTTP server started")
+                                } catch {
+                                    print("[!] Failed to start server.")
+                                    return false
+                                }
+                            }
+                            
+                            server["/" + "signed.ipa"] = shareFile(signedIPAPath.path)
+                            server["" + "appIcon.png"] = shareFile(extractAppIcon(appFolderURL: appURL).path)
+                            server["/install.plist"] = shareFile(plistPath)
+                            
+                            print("[*] Installing...")
+                            installURL = URL(string: "itms-services://?action=download-manifest&url=https://spyware.party/install")!
+                            print("[*] Manifest URL: \(installURL!.absoluteString)")
+                            await openURL(installURL!)
+                            hasDoneRemoteInstallSoWeCanCloseTheFuckingServer = true
+                        } else {
+                            print("what the sigma")
+                        }
+                        print("[*] Success!")
+                        return true
+                    }
                 } else {
-                    print("what the sigma")
+                    Alertinator.shared.alert(title: "Signing Failed", body: "An error occurred while signing. Check the logs for more info. \(String(describing: error))")
+                    return false
                 }
-                print("[*] Success!")
-                return (true, installURL)
+                return false
             }
-        } else if (code == -1) {
-            print("[!] zsign exited with code -1. This is bad. Check Xcode logs for more details.")
-            return (false, nil)
-        } else {
-            print("[!] zsign exited with code \(code)")
-            return (false, nil)
-        }
-        return (false, nil)
+        })
+        return false
     }
     
     func createPlistFile(content: String, destinationPath: URL) -> String? {
@@ -300,6 +307,7 @@ public class Sideloading: ObservableObject {
             try cert.info.domains.commonName.write(to: certURL.appendingPathComponent("cmnName"), atomically: true, encoding: .utf8)
             
             Alertinator.shared.alert(title: "Success!", body: "Successfully fetched SSL certificates!")
+            dropDatConfetti()
         } catch {
             if let decodingError = error as? DecodingError {
                 switch decodingError {

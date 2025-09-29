@@ -69,7 +69,6 @@ struct LibraryView: View {
                                 .padding()
                                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                                 .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 26.0))
-                                .listRowBackground(Color(.accent))
                             } else {
                                 VStack {
                                     Text("No apps imported!")
@@ -152,6 +151,115 @@ struct LibraryView: View {
     }
 }
 
+struct AppCustomizationView: View {
+    let app: LibraryApp
+    
+    @StateObject private var certManager = CertificateManager()
+    
+    @FocusState private var keyboardFocused: Bool
+    
+    @AppStorage("installMethod") private var installMethod: Int = 0
+    
+    @Environment(\.dismiss) var dismiss
+    
+    @State private var customAppName: String = ""
+    @State private var customBundleID: String = ""
+    @State private var customBundleVersion: String = ""
+    
+    var body: some View {
+        NavigationStack {
+            VStack {
+                List {
+                    Section(header: HStack {
+                        Image(systemName: "apps.iphone")
+                        Text("Basic Info")
+                    }, content: {
+                        AvarkTextField(text: "App Name (\(app.name))", inputType: nil, fieldData: $customAppName)
+                        AvarkTextField(text: "Identifier (\(app.bundleIdentifier))", inputType: nil, fieldData: $customBundleID)
+                        AvarkTextField(text: "Version (\(app.bundleVersion))", inputType: nil, fieldData: $customBundleVersion)
+//                        VStack {
+//                            HStack {
+//                                Spacer()
+//                                if #available(iOS 26.0, *) {
+//                                    URLImageView(url: app.iconURL.absoluteString)
+//                                        .frame(width: 80, height: 80)
+//                                        .cornerRadius(18)
+//                                        .glassEffect(in: .rect(cornerRadius: 14))
+//                                } else {
+//                                    URLImageView(url: app.iconURL.absoluteString)
+//                                        .frame(width: 80, height: 80)
+//                                        .cornerRadius(18)
+//                                }
+//                                Spacer()
+//                            }
+//                            Text(app.name)
+//                                .font(.title2)
+//                        }
+                    })
+                    
+                    Section(header: HStack {
+                        Image(systemName: "document")
+                        Text("Tweaks")
+                    }, content: {
+                        HStack {
+                            Spacer()
+                            Text("eta s0n")
+                                .font(.title)
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                        }
+                    })
+                    
+                    Section(header: HStack {
+                        Image(systemName: "person.text.rectangle")
+                        Text("Certificate")
+                    }, content: {
+                        let cert = certManager.activeCertificate!
+                        let certURL = cert.url
+                        
+                        let mpPath = certURL.appendingPathComponent("mp.mobileprovision")
+                        HStack(spacing: 16) {
+                            Image(systemName: "signature")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 54, height: 54)
+                            
+                            VStack(alignment: .leading) {
+                                Text(cert.name)
+                                    .font(.headline)
+                                    .lineLimit(1)
+                                Text("Expires on \(certManager.parseExpirationDate(url: mpPath))")
+                                    .font(.subheadline)
+                                    .minimumScaleFactor(0.8)
+                                    .lineLimit(1)
+                            }
+                        }
+                    })
+                    
+                    Section {
+                        AvarkButton(text: "Install", icon: "arrow.down", foregroundStyle: .accent, isDisabled: false, action: {
+                            Task {
+                                await Sideloading.shared.sideload(app: app, cert: certManager.activeCertificate!, customizationOptions: Sideloading.AppCustomizationOptions(appName: customAppName, bundleID: customBundleID, bundleVersion: customBundleVersion), installMethod: installMethod)
+                            }
+                        })
+                    }
+                }
+            }
+            .navigationTitle("Customize \(app.name)")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing, content: {
+                    Button(action: {
+                        dismiss()
+                    }, label: {
+                        AvarkCloseButton()
+                    })
+                })
+            }
+        }
+    }
+}
+
 // didn't feel like moving these all into another big file, so all the library stuff shall be one
 struct InlineAppCard: View {
     @StateObject private var certManager = CertificateManager()
@@ -159,6 +267,7 @@ struct InlineAppCard: View {
     var app: LibraryApp
     @Environment(\.openURL) var openURL
     @State private var isLoading = false
+    @State private var showCustomizationView: Bool = false
     
     var body: some View {
         HStack {
@@ -205,15 +314,15 @@ struct InlineAppCard: View {
                     
                     Task {
                         if let cert = certManager.activeCertificate {
-                            let result = await Sideloading.shared.sideload(app: app, cert: cert, installMethod: installMethod)
+                            let success = await Sideloading.shared.sideload(app: app, cert: cert, installMethod: installMethod)
 
                             await MainActor.run {
                                 isLoading = false
-                                if result.success, let url = result.installURL {
+                                if success {
 //                                    openURL(url)
                                     dropDatConfetti()
                                 } else {
-                                    Alertinator.shared.alert(title: "Error!", body: "Something went wrong. And I'm not sure what it was. 💀")
+                                    print("well damn")
                                 }
                             }
                         } else {
@@ -228,36 +337,40 @@ struct InlineAppCard: View {
                 }
                 
                 Button(action: {
-                    Alertinator.shared.alert(title: "the heck??", body: "whar??")
+                    if certManager.activeCertificate != nil {
+                        showCustomizationView.toggle()
+                    } else {
+                        Alertinator.shared.alert(title: "No certificates!", body: "Please import a certificate in the Settings tab.")
+                    }
                 }) {
-                    Label("Customize and install", systemImage: "paintpalette")
+                    Label("Customize and Install", systemImage: "paintpalette")
                 }
-                .disabled(true)
             }, label: {
                 if isLoading {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle())
                 } else {
                     if #available(iOS 26.0, *) {
-                        HStack {
-                            Text("Install")
-                                .foregroundStyle(.white)
-                        }
-                        .padding(8)
-                        .background(.accent)
-                        .cornerRadius(50)
-                        .glassEffect(.regular.interactive())
+                        Image(systemName: "arrow.down")
+                            .imageScale(.medium)
+                            .frame(width: 42, height: 42)
+                            .foregroundStyle(.primary)
+                            .foregroundStyle(.accent)
+                            .clipShape(.circle)
+                            .glassEffect(.regular.interactive(), in: .circle)
                     } else {
-                        HStack {
-                            Text("Install")
-                                .foregroundStyle(.white)
-                        }
-                        .padding(8)
-                        .background(.accent)
-                        .cornerRadius(50)
+                        Image(systemName: "arrow.down")
+                            .imageScale(.medium)
+                            .frame(width: 42, height: 42)
+                            .foregroundStyle(.primary)
+                            .foregroundStyle(.accent)
+                            .clipShape(.circle)
                     }
                 }
             })
+        }
+        .sheet(isPresented: $showCustomizationView) {
+            AppCustomizationView(app: app)
         }
     }
 }
